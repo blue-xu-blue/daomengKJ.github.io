@@ -10,6 +10,6 @@
 	</style>
 </head>
 <body>
-	<h1>Hello</h1>
+	<a href="index.html">Hello</a>
 </body>
 </html>
