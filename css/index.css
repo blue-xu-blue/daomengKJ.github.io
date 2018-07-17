@@ -1,3 +1,62 @@
-h1{
-	color: red;
+*{
+	margin: 0;
+	padding: 0;
+}
+body{
+	background-color: #000001;
+}
+.main{
+	width: 1200px;
+	min-width: 1200px;
+	height: 684px;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	margin: 0 auto;
+	z-index: 2;
+}
+.user{
+	position: absolute;
+	top: 244px;
+	left: 815px;
+	z-index: 3;
+	opacity: 0;
+}
+.lamplight{
+	opacity: 0;
+}
+.textTagTop,.textTagBottom{
+	position: absolute;
+}
+.textTagTop{
+	top: 0;
+}
+.textTagBottom{
+	top: 60px;
+}
+.textTagTop img,.textTagBottom img{
+	opacity: 0;
+}
+.leftShadow,.rightShadow{
+	position: absolute;
+	bottom: 0;
+	z-index: 1;
+	width: 50%;
+	opacity: 0;
+}
+.leftShadow{
+	left: 0;
+	height: 304px;
+	background: url("../images/index/left.png") repeat-x bottom;
+}
+.rightShadow{
+	right: 0;
+	height: 293px;
+	background: url("../images/index/right.png") repeat-x bottom;
+}
+
+.snowflake{
+	z-index: 999;
+	position: fixed;
 }

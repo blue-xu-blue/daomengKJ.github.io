@@ -3,73 +3,36 @@
 <head>
 	<meta charset="UTF-8">
 	<title>盗梦空间</title>
-	<script type="text/javascript" src="js/jquery.min.js"></script>
-	<style type="text/css">
-		*{
-			margin: 0;
-			padding: 0;
-		}
-		body{
-			background-color: #000001;
-		}
-		.main{
-			width: 1200px;
-			min-width: 1200px;
-			height: 681px;
-			position: absolute;
-			bottom: 0;
-			left: 0;
-			right: 0;
-			margin: 0 auto;
-			z-index: 2;
-		}
-		.user{
-			position: absolute;
-			top: 244px;
-			left: 815px;
-			z-index: 3;
-			opacity: 0;
-		}
-		.lamplight{
-			opacity: 0;
-		}
-		.leftShadow,.rightShadow{
-			position: absolute;
-			bottom: 0;
-			z-index: 1;
-			width: 50%;
-			opacity: 0;
-		}
-		.leftShadow{
-			left: 0;
-			height: 304px;
-			background: url("images/left.png") repeat-x bottom;
-		}
-		.rightShadow{
-			right: 0;
-			height: 298px;
-			background: url("images/right.png") repeat-x bottom;
-		}
-	</style>
-	<script type="text/javascript">
-		$(function(){
-			$(".user").animate({
-				opacity:'1'
-			},3000,function(){
-				$(".lamplight").animate({opacity:'1'},200);
-				$(".leftShadow").animate({opacity:'1'},200);
-				$(".rightShadow").animate({opacity:'1'},200);
-			});
-		});
-		
-	</script>
+	<script type="text/javascript" src="js/jQuery v3.3.1"></script>
+	<script type="text/javascript" src="js/threeCanvas-snowflake.js"></script>
+	<script type="text/javascript" src="js/snow-snowflake.js"></script>
+	<script type="text/javascript" src="js/snowflake.js"></script>
+
+	<script type="text/javascript" src="js/index.js"></script>
+	<link rel="stylesheet" type="text/css" href="css/index.css">
+
 </head>
 
-<body>
+<body onLoad="init()">
 	<div class="main">
-		<img class="user" src="images/user.png">
-		<img class="lamplight" src="images/lamplight.png">
-
+		<img class="user" src="images/index/user.png">
+		<img class="lamplight" src="images/index/lamplight.png">
+		<div class="textTagTop">
+			<img class="qian" src="images/index/qian01.png">
+			<img class="fang" src="images/index/fang02.png">
+			<img class="de" src="images/index/de03.png">
+			<img class="dao" src="images/index/dao04.png">
+			<img class="lu" src="images/index/lu05.png">
+		</div>
+		<div class="textTagBottom">
+			<img class="wo" src="images/index/wo06.png">
+			<img class="wei" src="images/index/wei07.png">
+			<img class="zi" src="images/index/zi08.png">
+			<img class="ji" src="images/index/ji09.png">
+			<img class="zhang" src="images/index/zhang10.png">
+			<img class="deng" src="images/index/deng11.png">
+			<img class="gth" src="images/index/gth12.png">
+		</div>
 	</div>
 	<div class="leftShadow"></div>
 	<div class="rightShadow"></div>
