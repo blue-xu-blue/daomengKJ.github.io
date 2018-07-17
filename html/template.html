@@ -17,11 +17,12 @@
 			width: 100%;
 			height: auto;
 		}
-		.template-top{
+		.template-content{
 			width: 1200px;
 			min-width: 1200px;
-			height: 80px;
+			height: auto;
 			margin: 0 auto;
+			position: relative;
 		}
 		.template-top-line{
 			background: linear-gradient(to right, #fe0602 , blue);
@@ -43,7 +44,16 @@
 			margin:0 auto;
 			opacity: 0;
 		}
-
+		.template-top{
+			width: 100%;
+			height: 80px;
+		}
+		.logoImg{
+			width: 70px;
+			position: relative;
+			top: 6px;
+			opacity: 0;
+		}
 	</style>
 
 	<script type="text/javascript">
@@ -55,11 +65,24 @@
 				$(".template-top-line").animate({
 					width : '100%'
 				},500,function(){
-					$(".bgImg").animate({
-						width : '800px',
-						opacity : '0.6',
-						width : '100px'
-					},2500);
+					setTimeout(function(){
+						$(".bgImg").animate({
+							width : '600px',
+							opacity : '0.5',
+						},180,function(){
+							$(".bgImg").animate({
+								width : '100px',
+								opacity : '1'
+							},300,function(){
+								$(".bgImg").animate({
+									opacity : '0'
+								},1800);
+								$(".logoImg").animate({
+									opacity : '1'
+								},3000);
+							});
+						});
+					},300);
 				});
 			});
 
@@ -73,13 +96,18 @@
 	<div class="container">
 		
 		<div class="template-content">
+
 			<div class="template-top">
-			
+				
+				<img class="logoImg" src="../images/template/log.jpeg">
+
 			</div>
-			<img class="bgImg" src="../images/template/log.jpeg">
+
 		</div>
 
 		<hr class="template-top-line" />
+
+		<img class="bgImg" src="../images/template/log.jpeg">
 
 	</div>
 

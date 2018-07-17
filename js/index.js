@@ -7,7 +7,11 @@ $(function(){
 		$(".rightShadow").animate({opacity:'1'},300,
 			function(){
 				eachImg("textTagTop",function(){
-					eachImg("textTagBottom");
+					eachImg("textTagBottom",function(){
+						setTimeout(function(){
+							window.location.href = "html/template.html"
+						},300);
+					});
 				});	
 			});
 		$(".snowflake").animate({opacity:'0.6'},300);
