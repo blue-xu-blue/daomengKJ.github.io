@@ -2,12 +2,77 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>首页</title>
-	
+	<title>盗梦空间</title>
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<style type="text/css">
+		*{
+			margin: 0;
+			padding: 0;
+		}
+		body{
+			background-color: #000001;
+		}
+		.main{
+			width: 1200px;
+			min-width: 1200px;
+			height: 681px;
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			margin: 0 auto;
+			z-index: 2;
+		}
+		.user{
+			position: absolute;
+			top: 244px;
+			left: 815px;
+			z-index: 3;
+			opacity: 0;
+		}
+		.lamplight{
+			opacity: 0;
+		}
+		.leftShadow,.rightShadow{
+			position: absolute;
+			bottom: 0;
+			z-index: 1;
+			width: 50%;
+			opacity: 0;
+		}
+		.leftShadow{
+			left: 0;
+			height: 304px;
+			background: url("images/left.png") repeat-x bottom;
+		}
+		.rightShadow{
+			right: 0;
+			height: 298px;
+			background: url("images/right.png") repeat-x bottom;
+		}
+	</style>
+	<script type="text/javascript">
+		$(function(){
+			$(".user").animate({
+				opacity:'1'
+			},3000,function(){
+				$(".lamplight").animate({opacity:'1'},200);
+				$(".leftShadow").animate({opacity:'1'},200);
+				$(".rightShadow").animate({opacity:'1'},200);
+			});
+		});
+		
+	</script>
 </head>
 
 <body>
-	<h1>首页测试</h1>
-	<a href="html/tiaozhuan.html">跳转测试</a>
+	<div class="main">
+		<img class="user" src="images/user.png">
+		<img class="lamplight" src="images/lamplight.png">
+
+	</div>
+	<div class="leftShadow"></div>
+	<div class="rightShadow"></div>
+
 </body>
 </html>
