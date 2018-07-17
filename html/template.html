@@ -3,9 +3,85 @@
 <head>
 	<meta charset="UTF-8">
 	<title>盗梦空间-个人博客</title>
-	
+	<script type="text/javascript" src="../js/jQuery v3.3.1"></script>
+
+	<style type="text/css">
+		*{
+			margin: 0;
+			padding: 0;
+		}
+		body{
+			background-color: black;
+		}
+		.container{
+			width: 100%;
+			height: auto;
+		}
+		.template-top{
+			width: 1200px;
+			min-width: 1200px;
+			height: 80px;
+			margin: 0 auto;
+		}
+		.template-top-line{
+			background: linear-gradient(to right, #fe0602 , blue);
+			box-shadow: 0px 1px 2px 0px #4b71fa;
+			height: 2px;
+			position: relative;
+			top: -1px;
+			border: none;
+			width: 0;
+			margin: 0 auto;
+		}
+		.bgImg{
+			width: 0;
+			position: absolute;
+			top: 50%;
+			transform:  translateY(-50%);
+			left: 0;
+			right: 0;
+			margin:0 auto;
+			opacity: 0;
+		}
+
+	</style>
+
+	<script type="text/javascript">
+		$(function(){
+			$(".bgImg").animate({
+				width : '300px',
+				opacity : '1'
+			},360,function(){
+				$(".template-top-line").animate({
+					width : '100%'
+				},500,function(){
+					$(".bgImg").animate({
+						width : '800px',
+						opacity : '0.6',
+						width : '100px'
+					},2500);
+				});
+			});
+
+			
+
+		});
+	</script>
 </head>
 <body>
 	
+	<div class="container">
+		
+		<div class="template-content">
+			<div class="template-top">
+			
+			</div>
+			<img class="bgImg" src="../images/template/log.jpeg">
+		</div>
+
+		<hr class="template-top-line" />
+
+	</div>
+
 </body>
 </html>
