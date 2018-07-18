@@ -39,6 +39,8 @@
 			border: none;
 			width: 0;
 			margin: 0 auto;
+			left: 0;
+			right: 0;
 		}
 		.bgImg{
 			width: 0;
@@ -101,6 +103,22 @@
 		.template-main{
 			width: 100%;
 			height: auto;
+			position: relative;
+		}
+		.leftbar,.rightbar{
+			position: fixed;
+			top: 81px;
+			bottom: 0;
+			width: 2px;
+			box-shadow: 0 0 2px 0px #9cc7ff;
+			height: 0;
+		}
+		.leftbar{
+			background: linear-gradient(#FA0606 ,yellow, blue);
+		}
+		.rightbar{
+			margin-left: 250px;
+			background: linear-gradient(#C70539 , blue , yellow);
 		}
 	</style>
 
@@ -136,7 +154,8 @@
 			</div>
 			<!-- 中部主体内容区 -->
 			<div class="template-main">
-				
+				<div class="leftbar"></div>
+				<div class="rightbar"></div>
 			</div>
 
 		</div>
@@ -173,10 +192,17 @@
 								},2000,function(){
 									$(".nav a").animate({
 										opacity : '1'
-									},200);
-									setTimeout(function(){
-										$(".template-main").load("template-left-right.html");
-									},200);
+									},200,function(){
+										$(".rightbar").animate({
+											height : '100%'
+										},400);
+										setTimeout(function(){
+											$(".leftbar").animate({
+												height : '100%'
+											},400);
+										},100);
+									});
+									
 								});
 							});
 						});
@@ -184,6 +210,9 @@
 				});
 			});
 
+			/*setTimeout(function(){
+				$(".template-main").load("template-left-right.html");
+			},200);*/
 
 		});
 	</script>
