@@ -10,7 +10,7 @@ $(function(){
 					eachImg("textTagBottom",function(){
 						setTimeout(function(){
 							window.location.href = "html/template.html"
-						},300);
+						},800);
 					});
 				});	
 			});

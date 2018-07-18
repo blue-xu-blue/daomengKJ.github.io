@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<title>盗梦空间-个人博客</title>
-	<script type="text/javascript" src="../js/jQuery v3.3.1"></script>
+	<script type="text/javascript" src="../js/jquery.min.js"></script>
 
 	<style type="text/css">
 		*{
@@ -12,6 +12,12 @@
 		}
 		body{
 			background-color: black;
+		}
+		li{
+			list-style: none;
+		}
+		a{
+			text-decoration: none;
 		}
 		.container{
 			width: 100%;
@@ -28,8 +34,8 @@
 			background: linear-gradient(to right, #fe0602 , blue);
 			box-shadow: 0px 1px 2px 0px #4b71fa;
 			height: 2px;
-			position: relative;
-			top: -1px;
+			position: absolute;
+			top: 80px;
 			border: none;
 			width: 0;
 			margin: 0 auto;
@@ -43,10 +49,12 @@
 			right: 0;
 			margin:0 auto;
 			opacity: 0;
+			float: left;
 		}
 		.template-top{
 			width: 100%;
 			height: 80px;
+			overflow: hidden;
 		}
 		.logoImg{
 			width: 70px;
@@ -54,8 +62,91 @@
 			top: 6px;
 			opacity: 0;
 		}
+		.nav{
+			float: right;
+		}
+		.nav li{
+			float: left;
+			margin-top: 25px;
+			width: 120px;
+			height: 30px;
+		}
+		.nav li:nth-child(2){
+			margin-left: 15px;
+			margin-right: 15px;
+		}
+		.nav li span{
+			width: 0;
+			height: 30px;
+			background: linear-gradient(to bottom right, red ,yellow, blue);
+			transition:width 100ms ease;
+			display: inline-block;
+		}
+		.nav li span:hover{
+			width: 120px;
+		}
+		.nav li span a{
+			width: 114px;
+			height: 26px;
+			color: #fff;
+			text-shadow: 0 0 1px #fff;
+			display: inline-block;
+			text-align: center;
+			margin: 2px 3px;
+			line-height: 26px;
+			background-color: black;
+			opacity: 0;
+			outline: none;
+		}
+		.template-main{
+			width: 100%;
+			height: auto;
+		}
 	</style>
 
+</head>
+<body>
+	<!-- 最外层容器,随浏览器屏幕大小变化 -->
+	<div class="container">
+		<!-- 固定1200px -->
+		<div class="template-content">
+			<!-- 顶部logo 导航栏 -->
+			<div class="template-top">
+				
+				<img class="logoImg" src="../images/template/log.jpeg">
+
+				<ul class="nav">
+					<li>
+						<span>
+							<a href="#">个人信息</a>
+						</span>
+					</li>
+					<li>
+						<span>
+							<a href="#">互动交流</a>
+						</span>
+					</li>
+					<li>
+						<span>
+							<a href="#">游戏空间</a>
+						</span>
+					</li>
+				</ul>
+
+			</div>
+			<!-- 中部主体内容区 -->
+			<div class="template-main">
+				
+			</div>
+
+		</div>
+
+		<hr class="template-top-line" />
+
+		<img class="bgImg" src="../images/template/log.jpeg">
+
+	</div>
+	
 	<script type="text/javascript">
 		$(function(){
 			$(".bgImg").animate({
@@ -79,37 +170,22 @@
 								},1800);
 								$(".logoImg").animate({
 									opacity : '1'
-								},3000);
+								},2000,function(){
+									$(".nav a").animate({
+										opacity : '1'
+									},200);
+									setTimeout(function(){
+										$(".template-main").load("template-left-right.html");
+									},200);
+								});
 							});
 						});
 					},300);
 				});
 			});
 
-			
 
 		});
 	</script>
-</head>
-<body>
-	
-	<div class="container">
-		
-		<div class="template-content">
-
-			<div class="template-top">
-				
-				<img class="logoImg" src="../images/template/log.jpeg">
-
-			</div>
-
-		</div>
-
-		<hr class="template-top-line" />
-
-		<img class="bgImg" src="../images/template/log.jpeg">
-
-	</div>
-
 </body>
 </html>
