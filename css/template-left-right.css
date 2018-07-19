@@ -1,0 +1,38 @@
+.template-left{
+	width: 250px;
+	height: auto;
+	overflow: hidden;
+	float: left;
+}
+.template-left ul > li {
+	color: #fff;
+	width: 100%;
+	text-align: center;
+	line-height: 85px;
+	background: url("../images/template/color_border.png") no-repeat center top;
+	background-size: auto auto;
+	background-size: 240px 85px;
+	filter: drop-shadow( 0px 0px 0px rgba(251, 49, 49, 0.86));
+	cursor: pointer;
+	position: relative;
+	left: -250px;
+}
+.template-left ul > li:hover{
+	filter: drop-shadow( 0px 0px 0px #fff);
+}
+.template-left ul li > ol{
+	width: 244px;
+	margin-left: 3px;
+	display: none;
+}
+.template-left ol li{
+	height: 30px;
+	line-height: 30px; 
+}
+.template-right{
+	width: 940px;
+	height: auto;
+	float: right;
+	height: 300px;
+	border: 1px solid red;
+}

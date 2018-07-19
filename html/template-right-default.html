@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>盗梦空间-个人博客</title>
+	<link rel="stylesheet" type="text/css" href="../css/time-flipcountdown.css">
+	<script type="text/javascript" src="../js/time-flipcountdown.js"></script>
+	
+	<style type="text/css">
+		.top-time{
+			height: 80px;
+		}
+		.time-flipcountdown{
+			margin-top: 10px;
+		}
+		.top-bar{
+			background: linear-gradient(to right, #fe0602 , blue);
+			box-shadow: 0px 1px 2px 0px #4b71fa;
+			height: 2px;
+
+		}
+	</style>
+
+	<script type="text/javascript">
+		$(function(){
+			$("#time-flipcountdown").flipcountdown({speedFlip:50});
+		});
+	</script>
+</head>
+<body>
+	
+	<div class="top-time">
+		<div id="time-flipcountdown"></div>
+	</div>
+	<hr class="top-bar" />
+
+</body>
+</html>
