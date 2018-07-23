@@ -37,5 +37,9 @@ function eachli(li,callback){
 	});
 }
 function loadRightDefault(){
-	$(".template-right").load("../html/template-right-default.html");
+	$(".rightbar").animate({
+		height : '100%'
+	},200,function(){
+		$(".template-right").load("../html/template-right-default.html");
+	});
 }

@@ -101,9 +101,9 @@ a{
 	position: fixed;
 	top: 81px;
 	bottom: 0;
-	width: 250px;
+	width: 1200px;
 }
-.leftbar,.rightbar{
+.leftbar,.rightbar,.middlebar{
 	position: absolute;
 	width: 2px;
 	box-shadow: 0 0 2px 0px #9cc7ff;
@@ -112,7 +112,12 @@ a{
 .leftbar{
 	background: linear-gradient(#FA0606 ,yellow, blue);
 }
+.middlebar{
+	left: 250px;
+	background: linear-gradient(#C70539 , blue , yellow);
+}
 .rightbar{
 	right: 0;
-	background: linear-gradient(#C70539 , blue , yellow);
+	background: linear-gradient(blue , #FA0606);
+	
 }

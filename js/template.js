@@ -25,7 +25,7 @@ $(function(){
 								opacity : '1'
 							},200);
 							setTimeout(function(){
-								$(".rightbar").animate({
+								$(".middlebar").animate({
 									height : '100%'
 								},400);
 								setTimeout(function(){

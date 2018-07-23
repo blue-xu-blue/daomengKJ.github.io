@@ -8,29 +8,79 @@
 	
 	<style type="text/css">
 		.top-time{
-			height: 80px;
+			height: 60px;
+			color: white;
+			position: relative;
 		}
 		.time-flipcountdown{
 			margin-top: 10px;
 		}
 		.top-bar{
-			background: linear-gradient(to right, #fe0602 , blue);
+			background: linear-gradient(to right, #fe0602 , #4b74f9);
 			box-shadow: 0px 1px 2px 0px #4b71fa;
 			height: 2px;
-
+			border: none;
+			width: 945px;
+		}
+		.weekendText{
+			float: left;
+			line-height: 54px;
+			padding-left: 10px;
+		}
+		.weekendText em{
+			font-size: 22px;
+			font-weight: bold;
+			color: red;
+			text-shadow: 1px 1px 1px #fff;
+		}
+		.time-flipcountdown{
+			position: absolute;
+			right: 0;
+			top: -7px;
+			margin-right: 3px;
 		}
 	</style>
 
 	<script type="text/javascript">
 		$(function(){
+			//加载翻页时间表
 			$("#time-flipcountdown").flipcountdown({speedFlip:50});
+			var date = new Date();
+			var num = date.getDay();
+			var fromWeekNum = 5 - num;
+			var weekText = "";
+			switch(num){
+				case 1: 
+				weekText = "今天是星期一,距离周末还有 <em>"+fromWeekNum+"</em> 天";
+				break;
+				case 2:
+				weekText = "今天是星期二,距离周末还有 <em>"+fromWeekNum+"</em> 天";
+				break;
+				case 3:
+				weekText = "今天是星期三,距离周末还有 <em>"+fromWeekNum+"</em> 天";
+				break;
+				case 4:
+				weekText = "今天是星期四,距离周末还有 <em>"+fromWeekNum+"</em> 天";
+				break;
+				case 5:
+				weekText = "今天是星期五,明天就是周末！";
+				break;
+				case 6:
+				weekText = "今天是星期六,周末愉快！";
+				break;
+				case 0:
+				weekText = "今天是星期日,明天又要上班了！";
+				break;
+			}
+			$(".weekendText").append(weekText);
 		});
 	</script>
 </head>
 <body>
 	
 	<div class="top-time">
-		<div id="time-flipcountdown"></div>
+		<div class="weekendText"></div>
+		<div id="time-flipcountdown" class="time-flipcountdown"></div>
 	</div>
 	<hr class="top-bar" />
 

@@ -25,17 +25,18 @@
 	margin-left: 29px;
 	display: none;
 }
-.template-left ol li{
+.template-left ul li > ol li{
 	height: 30px;
 	line-height: 30px; 
 	background: url("../images/template/circle_icon.png") no-repeat left center;
 	background-size: 22px;
-	filter: drop-shadow( 0px 0px 0px rgba(251, 49, 49, 0.86));
+	/* filter: drop-shadow( 0px 0px 0px rgba(251, 49, 49, 0.86)); */
+}
+.template-left ul li > ol li:hover{
+	filter: drop-shadow( 0px 0px 0px #fff);
 }
 .template-right{
-	width: 940px;
+	width: 949px;
 	height: auto;
 	float: right;
-	height: 300px;
-	border: 1px solid red;
 }
