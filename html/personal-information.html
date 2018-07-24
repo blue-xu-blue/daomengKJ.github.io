@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>盗梦空间-个人博客<</title>
+	<link rel="stylesheet" type="text/css" href="../css/video-js.min.css">
+	<script type="text/javascript" src="../js/video.min.js"></script>
+
+	<style type="text/css">
+		#my-video{
+			z-index: 8;
+			margin-top: 4px;
+		}
+		.vdieoText{
+			width: 100%;
+			height: 675px;
+			z-index: 9;
+			position: absolute;
+			top: 0;
+			left: 0;
+			color: white;
+		}
+		.vdieoText p{
+			padding: 5px;
+			text-shadow: 0 0 15px #20f5f2;
+		}
+		.oneAnimationLeft,.oneAnimationRight{
+			width: 320px;
+			height: auto;
+			position: absolute;
+			top: 280px;
+			border: 1px solid #fff;
+		}
+		 .oneAnimationLeft p,.oneAnimationRight p{
+			font-size: 44px;
+			color: transparent;	
+			transition: color 2s;
+		} 
+		.oneAnimationLeft{
+			left: 0;
+			text-align: right;
+		}
+		.oneAnimationRight{
+			right: 0;
+		}
+	</style>
+</head>
+<body>
+	
+	
+
+	<video id="my-video" class="video-js vjs-default-skin vjs-big-play-centered" data-setup="{}" width="1200" height="675">
+		<source src="../video/bg.mp4" type="video/mp4">
+	</video>
+
+	<div class="vdieoText">
+		<div class="oneAnimationLeft">
+			<p>工作地点：北京</p>
+			<p>工作岗位：Java</p>
+		</div>
+		<div class="oneAnimationRight">
+			<p>性别：男</p>
+			<p>爱好：吃喝玩乐</p>
+		</div>
+
+		<!-- <div class="twoAnimation">
+			<p>数据可视化</p>
+			<p>工作中使用到的数据图表,直观展现数据的差异变化</p>
+		</div>
+		
+		<div class="threeAnimation">
+			<p>学无止境</p>
+			<p>工作中不会的知识问题，或难或简单,大神别嘲笑</p>
+		</div>
+		
+		<div class="fourAnimation">
+			<p>盗梦空间，欢迎您的拜访！</p>
+			<p>邮箱:1085111672@qq.com</p>
+		</div> -->
+	</div>
+
+	<button onclick="startVideo()">开始</button>
+	<button onclick="topVideo()">停止</button>
+	
+	<script type="text/javascript">
+		var myPlayer = videojs('my-video');
+		myPlayer.controls(false);//是否显示播放按钮及进度，供用户控制(default:true)
+		
+		var myInterVal;
+		function startVideo(){
+			myPlayer.play();
+			startTextAnimation();
+			myInterVal = setInterval(function(){
+				whereYouAt = myPlayer.currentTime();//获取播放进度：
+				console.log(whereYouAt);
+				//指定进度到达16，便停止播放
+				if(whereYouAt >= 16){
+					myPlayer.pause();//暂停
+					clearInterval(myInterVal);//清除setInterval
+				}
+			},100);
+
+		}
+		function topVideo(){
+			myPlayer.pause();//暂停
+			clearInterval(myInterVal);//清楚setInterval
+		}
+		function startTextAnimation(){
+			$(".oneAnimationLeft p,.oneAnimationRight p").animate({
+				fontSize : '16px'
+			},function(){
+				$(".oneAnimationLeft p,.oneAnimationRight p").css("color","white");
+			});
+		}
+	</script>
+</body>
+</html>

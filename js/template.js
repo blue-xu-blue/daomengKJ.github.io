@@ -44,3 +44,7 @@ $(function(){
 	});
 	
 });
+function loadTemplateMain(address){
+	$(".border-bar").fadeOut();
+	$(".template-main").load(address);
+}
