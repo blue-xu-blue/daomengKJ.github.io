@@ -4,7 +4,21 @@
 	<meta charset="UTF-8">
 	<title>盗梦空间-个人博客</title>
 	<link rel="stylesheet" type="text/css" href="../css/template-left-right.css">
+	<link rel="stylesheet" type="text/css" href="../css/time-flipcountdown.css">
+	<!-- 注意js先后加载的顺序，因为template-left-right.js 里面需要用到 time-flipcountdown.js(先加载)-->
+	<script type="text/javascript" src="../js/time-flipcountdown.js"></script>
 	<script type="text/javascript" src="../js/template-left-right.js"></script>
+	
+	<!-- 防止加载慢，使用默认样式 -->
+	<style type="text/css">
+		.top-bar{
+			background: linear-gradient(to right, #fe0602 , #4b74f9);
+			box-shadow: 0px 1px 2px 0px #4b71fa;
+			height: 2px;
+			border: none;
+			width: 0;
+		}
+	</style>
 
 </head>
 <body>
@@ -48,7 +62,14 @@
 		<!-- <img src="../images/template/color_border.png"> -->
 	</div>
 	<!-- 右侧内容区 -->
-	<div class="template-right"></div>
+	<div class="template-right">
+		<div class="top-time">
+			<div class="weekendText"></div>
+			<div id="time-flipcountdown" class="time-flipcountdown"></div>
+		</div>
+		<hr class="top-bar" />
+		<div class="switchConainer"></div>
+	</div>
 
 </body>
 </html>

@@ -40,3 +40,40 @@
 	height: auto;
 	float: right;
 }
+.top-time{
+	height: 60px;
+	color: white;
+	position: relative;
+	opacity: 0;
+}
+.time-flipcountdown{
+	margin-top: 10px;
+}
+/* .top-bar{
+	background: linear-gradient(to right, #fe0602 , #4b74f9);
+	box-shadow: 0px 1px 2px 0px #4b71fa;
+	height: 2px;
+	border: none;
+	width: 0;
+} */
+.weekendText{
+	float: left;
+	line-height: 54px;
+	padding-left: 10px;
+}
+.weekendText em{
+	font-size: 22px;
+	font-weight: bold;
+	color: red;
+	text-shadow: 1px 1px 1px #fff;
+}
+.time-flipcountdown{
+	position: absolute;
+	right: 0;
+	top: -7px;
+	margin-right: 3px;
+}
+.switchConainer{
+	width: 100%;
+	height: auto;
+}
