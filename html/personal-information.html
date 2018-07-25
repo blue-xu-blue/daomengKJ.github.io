@@ -10,6 +10,7 @@
 		#my-video{
 			z-index: 8;
 			margin-top: 4px;
+			opacity: 0;
 		}
 		.vdieoText{
 			width: 100%;
@@ -29,7 +30,7 @@
 			height: auto;
 			position: absolute;
 			top: 280px;
-			border: 1px solid #fff;
+			display: none;
 		}
 		 .oneAnimationLeft p,.oneAnimationRight p{
 			font-size: 44px;
@@ -43,11 +44,102 @@
 		.oneAnimationRight{
 			right: 0;
 		}
+		.twoAnimation{
+			position: absolute;
+			width: 760px;
+			height: auto;
+			left: 410px;
+			bottom: 325px;
+			display: none;
+		}
+		.twoAnimation p{
+			color: transparent;
+			font-size: 33px;
+			transition: color 2s;
+		}
+		.threeAnimation{
+			position: absolute;
+			width: 760px;
+			height: auto;
+			left: 0;
+			bottom: 325px;
+			display: none;
+		}
+		.threeAnimation p{
+			color: transparent;
+			font-size: 33px;
+			transition: color 2s;
+		}
+		.fourAnimation{
+			position: absolute;
+			width: 1200px;
+			height: auto;
+			top: 360px;
+			display: none;
+		}
+		.fourAnimation p{
+			font-size: 50px;
+			color: transparent;
+			transition: color 1s;
+		}
+		.fourAnimation p:first-child{
+		    float: left;
+		}
+		.fourAnimation p:last-child{
+		    float: right;
+		}
+
+		.preheatAnimation{
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			width: 100%;
+			height: 675px;
+			z-index: 10;
+		}
+		.numDownImg,.eyeImg,.preheatText{
+			position: absolute;
+			left: 0;
+			right: 0;
+			margin: 0 auto;
+		}
+		.numDownImg,.eyeImg{
+			top: 50%;
+			transform: translateY(-50%);
+		}
+		.numDownImg{
+			width: 200px;
+			height: 270px;
+			background-repeat: no-repeat;
+			background-size: 200px;
+			background-position-x: center;
+		}
+		.eyeImg{
+			display: none;
+			width: 0;
+		}
+		.preheatText{
+			bottom: 10%;
+		}
+		.preheatText p{
+			color: white;
+			text-align: center;
+			padding: 10px;
+			display: none;	
+		}
 	</style>
 </head>
 <body>
 	
-	
+	<div class="preheatAnimation">
+		<div class="numDownImg"></div>
+		<img class="eyeImg" src="../images/personal-information/eye.jpeg">
+		<div class="preheatText">
+			<p>没被吓到？ 胆儿挺肥！ 是时候下锅了～</p>
+			<p>美国大片——即将上映</p>
+		</div>
+	</div>
 
 	<video id="my-video" class="video-js vjs-default-skin vjs-big-play-centered" data-setup="{}" width="1200" height="675">
 		<source src="../video/bg.mp4" type="video/mp4">
@@ -63,7 +155,7 @@
 			<p>爱好：吃喝玩乐</p>
 		</div>
 
-		<!-- <div class="twoAnimation">
+		<div class="twoAnimation">
 			<p>数据可视化</p>
 			<p>工作中使用到的数据图表,直观展现数据的差异变化</p>
 		</div>
@@ -76,40 +168,159 @@
 		<div class="fourAnimation">
 			<p>盗梦空间，欢迎您的拜访！</p>
 			<p>邮箱:1085111672@qq.com</p>
-		</div> -->
+		</div>
 	</div>
 
-	<button onclick="startVideo()">开始</button>
-	<button onclick="topVideo()">停止</button>
+	<!-- <button onclick="startVideo()">开始</button>
+	<button onclick="stopVideo()">停止</button> -->
 	
 	<script type="text/javascript">
+
+		$(function(){
+			var num = 5;
+			var numImgVal = setInterval(function(){
+				console.log(num);
+				$(".numDownImg").css("background-image","url('../images/personal-information/num"+num+".png')");
+				if(num == 1){
+					clearInterval(numImgVal);
+					setTimeout(function(){
+						$(".numDownImg").hide();
+						$(".eyeImg").show().animate({
+							width : '1200px'
+						},100,function(){
+							$(".preheatText p").first().fadeIn();
+							$(".preheatText p").last().fadeIn(1000);
+							setTimeout(function(){
+								$(".preheatAnimation").animate({
+									top : '-675px'
+								},300,function(){
+									$(".preheatAnimation").hide();
+									startVideo();
+								});
+							},1500);
+						});
+					},800);
+				}else{
+					num --;
+				}
+			},800);
+		});
+
 		var myPlayer = videojs('my-video');
 		myPlayer.controls(false);//是否显示播放按钮及进度，供用户控制(default:true)
 		
-		var myInterVal;
 		function startVideo(){
+			$("#my-video").css("opacity","1");
 			myPlayer.play();
-			startTextAnimation();
-			myInterVal = setInterval(function(){
+			
+			//定义锁，防止场次动画多次加载
+			var oneFlg = true;
+			var twoFlg = true;
+			var threeFlg = true;
+			var fourFlg = true;
+
+			var myInterVal = setInterval(function(){
 				whereYouAt = myPlayer.currentTime();//获取播放进度：
 				console.log(whereYouAt);
+
+				//进入第一场动画
+				if(whereYouAt > 0.1){
+					if (oneFlg) {
+						oneFlg = false;
+						console.log("进入第一场动画");
+						startOneAnimation();
+					}
+				}
+
+				//进入第二场动画
+				if(whereYouAt > 4.4){
+					if(twoFlg){
+						twoFlg = false;
+						console.log("进入第二场动画");
+						startTwoAnimation();
+					}
+				}
+
+				//进入第三场动画
+				if(whereYouAt > 9.5){
+					if(threeFlg){
+						threeFlg = false;	
+						console.log("进入第三场动画");
+						startThreeAnimation();
+						//stopVideo();
+					}
+				}
+
+				//进入第四场动画
+				if(whereYouAt > 14.5){
+					if(fourFlg){
+						fourFlg = false;
+						console.log("进入第四场动画");
+						startFourAnimation();
+					}
+				}
+
 				//指定进度到达16，便停止播放
-				if(whereYouAt >= 16){
+				if(whereYouAt >= 16.5){
 					myPlayer.pause();//暂停
 					clearInterval(myInterVal);//清除setInterval
 				}
 			},100);
 
 		}
-		function topVideo(){
+		function stopVideo(){
 			myPlayer.pause();//暂停
 			clearInterval(myInterVal);//清楚setInterval
 		}
-		function startTextAnimation(){
+		function startOneAnimation(){
+			$(".oneAnimationLeft,.oneAnimationRight").show();
 			$(".oneAnimationLeft p,.oneAnimationRight p").animate({
 				fontSize : '16px'
-			},function(){
-				$(".oneAnimationLeft p,.oneAnimationRight p").css("color","white");
+			},800,function(){
+				$(".oneAnimationLeft p,.oneAnimationRight p").css("color","rgb(34, 237, 252)");
+				setTimeout(function(){
+					$(".oneAnimationLeft,.oneAnimationRight").fadeOut(1500);
+				},2100);
+			});
+		}
+
+		function startTwoAnimation(){
+			$(".twoAnimation").show();
+			$(".twoAnimation p").animate({
+				fontSize : '20px'
+			},400,function(){
+				$(".twoAnimation p").css("color","rgb(34, 237, 252)");
+				setTimeout(function(){
+					$(".twoAnimation p").css("color","white");
+				},1200);
+				setTimeout(function(){
+					$(".twoAnimation").fadeOut();
+				},3900);
+			});	
+		}
+
+		function startThreeAnimation(){
+			$(".threeAnimation").show();
+			$(".threeAnimation p").animate({
+				fontSize : '20px'
+			},400,function(){
+				$(".threeAnimation p").css("color","rgb(34, 237, 252)");
+				setTimeout(function(){
+					$(".threeAnimation").animate({
+						left : '10px'
+					},1500,function(){
+						$(".threeAnimation").fadeOut(300);
+					});
+				},1000);
+			});
+		}
+
+		function startFourAnimation(){
+			$(".fourAnimation").show();
+			$(".fourAnimation p").animate({
+				fontSize : '22px'
+			},600,function(){
+				$(".fourAnimation p").css("color","rgb(34, 115, 216)");
 			});
 		}
 	</script>
