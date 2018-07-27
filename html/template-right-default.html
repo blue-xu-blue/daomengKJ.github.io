@@ -3,15 +3,123 @@
 <head>
 	<meta charset="UTF-8">
 	<title>盗梦空间-个人博客</title>
-
-	
-	
-
+	<script type="text/javascript" src="../js/jquery.min.js"></script>
+	<style type="text/css">
+		#testHtml{
+			border: 1px solid red;
+			width: 1200px;
+			height: 500px;
+		}
+	</style>
 	
 </head>
 <body>
 	
-	
+	<div id="weather"></div>
+
+
+	<script type="text/javascript">
+		/**
+		步骤:
+			1:统计34个身份
+			2.根据34个省份的名称 获取 cityid
+			3.通过cityid到 “中国天气” 获取天气数据，存入json中备用
+			4.地图绘制
+			5.获取当前用户的地区，加载最高温度，最低温度及一天内温度折线图
+			6.添加 选择城市 查询功能
+		*/
+
+		$(function(){
+			//此接口可以获取cityID，及7天天气预报(可能不太准确)
+			/*$.ajax({
+				url:'http://api.k780.com:88/?app=weather.future&weaid=1&&appkey=10003&sign=b59bc3ef6191eb9f747dd4e83c99f2a4&format=json&jsoncallback=data',
+				type:'get',
+				dataType:'jsonp',
+				jsonp:'jsoncallback',
+				success:function(data){
+					console.log(data);
+					alert(data);
+				},
+				error:function(XMLHttpRequest, textStatus, errorThrown){
+					alert(XMLHttpRequest.status);
+	                alert(XMLHttpRequest.readyState);
+	                alert(textStatus);
+				}
+			});*/
+
+			//解决跨域问题
+			$.ajaxPrefilter(function (options) {
+		        if (options.crossDomain && jQuery.support.cors) {
+		            var http = (window.location.protocol === 'http:' ? 'http:' : 'https:');
+		            options.url = http + '//cors-anywhere.herokuapp.com/' + options.url;
+		            //options.url = "http://cors.corsproxy.io/url=" + options.url;
+		        }
+		    });
+
+			$.get(
+	        'http://www.weather.com.cn/weather1d/101010100.shtml',
+	        function (response) {
+	        	var startIndex = response.indexOf('<div class="today clearfix" id="today">');
+	        	var endIndex = response.indexOf('<script>',startIndex);
+
+	        	//console.log(startIndex + " : " + endIndex);
+	        	var weatherHtml = response.substring(startIndex,endIndex+9);
+
+	        	var hourDataStartIndex = response.indexOf('{',startIndex);
+
+	        	var hourDataEndIndex = response.indexOf('}',startIndex);
+
+	        	var hourData = response.substring(hourDataStartIndex,hourDataEndIndex+1);
+
+	        	hourData = JSON.parse(hourData);
+
+	        	console.log(hourData);
+
+	        	
+
+	        	//console.log(weatherHtml);
+	        	$("#weather").html(weatherHtml);
+
+	        	//基本情况
+	        	var basicMessage = $("#weather > #today > #hidden_title").val();
+
+	        	console.log(basicMessage);
+	        	
+	        	//获取白天天气预报
+	        	var whiteDay = $("#weather > #today > .t > .clearfix > li").first();
+
+	        	var whiteDay_time = whiteDay.children("h1").text();
+
+	        	var whiteDay_condition = whiteDay.children(".wea").text();
+
+	        	var whiteDay_temperature = whiteDay.children(".tem").children("span").text()+"°C";
+
+	        	console.log(whiteDay_time);
+
+	        	console.log(whiteDay_condition);
+
+	        	console.log(whiteDay_temperature);
+
+	        	//获取夜间天气预报
+	        	var night = $("#weather > #today > .t > .clearfix > li").last();
+
+	        	var night_time = night.children("h1").text();
+
+	        	var night_condition = night.children(".wea").text();
+
+	        	var night_temperature = night.children(".tem").children("span").text()+"°C";
+
+	        	console.log(night_time);
+
+	        	console.log(night_condition);
+
+	        	console.log(night_temperature);
+
+	        });
+
+
+		});
+	</script>
 
 </body>
 </html>
