@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
+	<meta http-equiv="Access-Control-Allow-Origin" content="*">
 	<title>盗梦空间-个人博客</title>
 	<script type="text/javascript" src="../js/jquery.min.js"></script>
 	<style type="text/css">
@@ -59,11 +60,15 @@
 			$.get(
 	        'http://www.weather.com.cn/weather1d/101010100.shtml',
 	        function (response) {
+	        	//截取需要用到的html内容
 	        	var startIndex = response.indexOf('<div class="today clearfix" id="today">');
 	        	var endIndex = response.indexOf('<script>',startIndex);
 
 	        	//console.log(startIndex + " : " + endIndex);
+
+	        	///截取7天内的天气预报
 	        	var weatherHtml = response.substring(startIndex,endIndex+9);
+
 
 	        	var hourDataStartIndex = response.indexOf('{',startIndex);
 
@@ -71,11 +76,24 @@
 
 	        	var hourData = response.substring(hourDataStartIndex,hourDataEndIndex+1);
 
+	        	//json格式字符串转换为json对象
 	        	hourData = JSON.parse(hourData);
 
-	        	console.log(hourData);
+				/*for(var key in hourData){
+	        		console.log(key);
+	        		console.log(hourData[key]);
+	        	}*/
 
-	        	
+	        	//console.log(hourData);
+
+				//只获取当前一天内的天气预报
+	        	var weatherHourData = hourData["1d"];
+	        	console.log(hourData["1d"]);
+
+
+	        	/*for(var i in weatherHourData){
+	        		console.log(weatherHourData[i]);
+	        	}*/
 
 	        	//console.log(weatherHtml);
 	        	$("#weather").html(weatherHtml);
@@ -114,6 +132,26 @@
 	        	console.log(night_condition);
 
 	        	console.log(night_temperature);
+
+	        	//定义json格式
+	        	var provincesJson = {};
+	        	var beijingJson = {};
+	        	provincesJson["北京"] = beijingJson;
+	        	beijingJson["hotNum"] = 36;
+	        	beijingJson["lowNUm"] = 20;
+	        	beijingJson["weather_conditions"] = "多云";
+	        	beijingJson["beforeData"] = {"timeText":"30日白天","temperature":30,"weather_conditions":"晴"};
+	        	beijingJson["afterData"] = {"timeText":"30日白天","temperature":30,"weather_conditions":"晴"};
+	        	beijingJson["weatherHourData"] = weatherHourData;
+	        	
+	        	$.ajax({ 
+			        url:"../data/provinces23.txt", 
+			        type:'GET', 
+			        dataType:'JSONP',  // 处理Ajax跨域问题
+			        success: function(data){ 
+			            console.log(data);
+			        } 
+			    }); 
 
 	        });
 
