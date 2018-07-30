@@ -5,6 +5,8 @@
 	<meta http-equiv="Access-Control-Allow-Origin" content="*">
 	<title>盗梦空间-个人博客</title>
 	<script type="text/javascript" src="../js/jquery.min.js"></script>
+	<script type="text/javascript" src="../data/provinces34.json"></script>
+
 	<style type="text/css">
 		#testHtml{
 			border: 1px solid red;
@@ -15,9 +17,11 @@
 	
 </head>
 <body>
+	<div class="storeData" hidden="hidden"></div>
 	
 	<div id="weather"></div>
 
+	<p class="provinces"></p>
 
 	<script type="text/javascript">
 		/**
@@ -57,19 +61,31 @@
 		        }
 		    });
 
-			$.get(
-	        'http://www.weather.com.cn/weather1d/101010100.shtml',
-	        function (response) {
+		    getChinaWeather("101010100","北京市");
+
+
+
+			var data = getProvinces();
+			for(var key in data){
+				console.log(key + " : " + data[key]);
+				//getChinaWeather(key,data[key]);
+			}
+
+
+		});
+		
+		//定义json格式
+	    var provincesJson = {};
+		function getChinaWeather(cityId,cityName){
+			$.get('http://www.weather.com.cn/weather1d/'+cityId+'.shtml',function (response) {
 	        	//截取需要用到的html内容
 	        	var startIndex = response.indexOf('<div class="today clearfix" id="today">');
 	        	var endIndex = response.indexOf('<script>',startIndex);
 
-	        	//console.log(startIndex + " : " + endIndex);
-
-	        	///截取7天内的天气预报
+	        	
 	        	var weatherHtml = response.substring(startIndex,endIndex+9);
 
-
+	        	//截取7天内的天气预报
 	        	var hourDataStartIndex = response.indexOf('{',startIndex);
 
 	        	var hourDataEndIndex = response.indexOf('}',startIndex);
@@ -88,7 +104,6 @@
 
 				//只获取当前一天内的天气预报
 	        	var weatherHourData = hourData["1d"];
-	        	console.log(hourData["1d"]);
 
 
 	        	/*for(var i in weatherHourData){
@@ -96,15 +111,23 @@
 	        	}*/
 
 	        	//console.log(weatherHtml);
-	        	$("#weather").html(weatherHtml);
+	        	$(".storeData").html(weatherHtml);
 
-	        	//基本情况
-	        	var basicMessage = $("#weather > #today > #hidden_title").val();
+	        	//基本情况:07月30日08时 周一  晴  34/25°C
+	        	var basicMessage = $(".storeData > #today > #hidden_title").val();
+	        	var topAndLow = basicMessage.substring(basicMessage.lastIndexOf(" ")+1,basicMessage.indexOf("°C")).split("/");
+	        	var hotNum = topAndLow[0];
+	        	var lowNUm = topAndLow[1];
+
+	        	console.log(hotNum);
+	        	console.log(lowNUm);
+
+	        	var weather_conditions = basicMessage.substring(basicMessage.indexOf("周")+4,basicMessage.lastIndexOf(" ")-1);
 
 	        	console.log(basicMessage);
-	        	
+
 	        	//获取白天天气预报
-	        	var whiteDay = $("#weather > #today > .t > .clearfix > li").first();
+	        	var whiteDay = $(".storeData > #today > .t > .clearfix > li").first();
 
 	        	var whiteDay_time = whiteDay.children("h1").text();
 
@@ -112,14 +135,8 @@
 
 	        	var whiteDay_temperature = whiteDay.children(".tem").children("span").text()+"°C";
 
-	        	console.log(whiteDay_time);
-
-	        	console.log(whiteDay_condition);
-
-	        	console.log(whiteDay_temperature);
-
 	        	//获取夜间天气预报
-	        	var night = $("#weather > #today > .t > .clearfix > li").last();
+	        	var night = $(".storeData > #today > .t > .clearfix > li").last();
 
 	        	var night_time = night.children("h1").text();
 
@@ -127,37 +144,28 @@
 
 	        	var night_temperature = night.children(".tem").children("span").text()+"°C";
 
-	        	console.log(night_time);
 
-	        	console.log(night_condition);
+	        	//将存放数据的html清空，便于下次使用
+	        	$(".storeData").empty();
 
-	        	console.log(night_temperature);
-
-	        	//定义json格式
-	        	var provincesJson = {};
-	        	var beijingJson = {};
-	        	provincesJson["北京"] = beijingJson;
-	        	beijingJson["hotNum"] = 36;
-	        	beijingJson["lowNUm"] = 20;
-	        	beijingJson["weather_conditions"] = "多云";
-	        	beijingJson["beforeData"] = {"timeText":"30日白天","temperature":30,"weather_conditions":"晴"};
-	        	beijingJson["afterData"] = {"timeText":"30日白天","temperature":30,"weather_conditions":"晴"};
-	        	beijingJson["weatherHourData"] = weatherHourData;
+	        	//将数据添加到自定义json中
+	        	var cityJson = {};
+	        	provincesJson[cityName] = cityJson;
+	        	cityJson["hotNum"] = hotNum;
+	        	cityJson["lowNUm"] = lowNUm;
+	        	cityJson["weather_conditions"] = weather_conditions;
+	        	cityJson["beforeData"] = {"timeText":whiteDay_time,"temperature":whiteDay_temperature,"weather_conditions":whiteDay_condition};
+	        	cityJson["afterData"] = {"timeText":night_time,"temperature":night_temperature,"weather_conditions":night_condition};
+	        	cityJson["weatherHourData"] = weatherHourData;
 	        	
-	        	$.ajax({ 
-			        url:"../data/provinces23.txt", 
-			        type:'GET', 
-			        dataType:'JSONP',  // 处理Ajax跨域问题
-			        success: function(data){ 
-			            console.log(data);
-			        } 
-			    }); 
-
+	        	console.log(provincesJson);
 	        });
+		}
 
-
-		});
 	</script>
+
+
+
 
 </body>
 </html>

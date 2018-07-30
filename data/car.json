@@ -1,0 +1,8 @@
+var trains = {  
+    "status": "success"
+}
+
+
+   function test(){
+        return trains;
+   }
