@@ -61,20 +61,22 @@
 		        }
 		    });
 
-		    getChinaWeather("101010100","北京市");
+		    //getChinaWeather("101010100","北京市");
 
 
 
 			var data = getProvinces();
+			
 			for(var key in data){
-				console.log(key + " : " + data[key]);
-				//getChinaWeather(key,data[key]);
+				//console.log(key + " : " + data[key]);
+				getChinaWeather(key,data[key]);
 			}
 
 
 		});
 		
 		//定义json格式
+		var flg = true;
 	    var provincesJson = {};
 		function getChinaWeather(cityId,cityName){
 			$.get('http://www.weather.com.cn/weather1d/'+cityId+'.shtml',function (response) {
@@ -115,34 +117,28 @@
 
 	        	//基本情况:07月30日08时 周一  晴  34/25°C
 	        	var basicMessage = $(".storeData > #today > #hidden_title").val();
-	        	var topAndLow = basicMessage.substring(basicMessage.lastIndexOf(" ")+1,basicMessage.indexOf("°C")).split("/");
-	        	var hotNum = topAndLow[0];
-	        	var lowNUm = topAndLow[1];
-
-	        	console.log(hotNum);
-	        	console.log(lowNUm);
 
 	        	var weather_conditions = basicMessage.substring(basicMessage.indexOf("周")+4,basicMessage.lastIndexOf(" ")-1);
 
-	        	console.log(basicMessage);
+	        	//console.log(basicMessage);
 
 	        	//获取白天天气预报
-	        	var whiteDay = $(".storeData > #today > .t > .clearfix > li").first();
+	        	var currentData = $(".storeData > #today > .t > .clearfix > li").first();
 
-	        	var whiteDay_time = whiteDay.children("h1").text();
+	        	var current_time = currentData.children("h1").text();
 
-	        	var whiteDay_condition = whiteDay.children(".wea").text();
+	        	var current_condition = currentData.children(".wea").text();
 
-	        	var whiteDay_temperature = whiteDay.children(".tem").children("span").text()+"°C";
+	        	var current_temperature = currentData.children(".tem").children("span").text()+"°C";
 
 	        	//获取夜间天气预报
-	        	var night = $(".storeData > #today > .t > .clearfix > li").last();
+	        	var forecastData = $(".storeData > #today > .t > .clearfix > li").last();
 
-	        	var night_time = night.children("h1").text();
+	        	var forecast_time = forecastData.children("h1").text();
 
-	        	var night_condition = night.children(".wea").text();
+	        	var forecast_condition = forecastData.children(".wea").text();
 
-	        	var night_temperature = night.children(".tem").children("span").text()+"°C";
+	        	var forecast_temperature = forecastData.children(".tem").children("span").text()+"°C";
 
 
 	        	//将存放数据的html清空，便于下次使用
@@ -151,14 +147,15 @@
 	        	//将数据添加到自定义json中
 	        	var cityJson = {};
 	        	provincesJson[cityName] = cityJson;
-	        	cityJson["hotNum"] = hotNum;
-	        	cityJson["lowNUm"] = lowNUm;
 	        	cityJson["weather_conditions"] = weather_conditions;
-	        	cityJson["beforeData"] = {"timeText":whiteDay_time,"temperature":whiteDay_temperature,"weather_conditions":whiteDay_condition};
-	        	cityJson["afterData"] = {"timeText":night_time,"temperature":night_temperature,"weather_conditions":night_condition};
+	        	cityJson["currentData"] = {"current_time":current_time,"current_temperature":current_temperature,"current_condition":current_condition};
+	        	cityJson["forecastData"] = {"forecast_time":forecast_time,"forecast_temperature":forecast_temperature,"forecast_condition":forecast_condition};
 	        	cityJson["weatherHourData"] = weatherHourData;
 	        	
-	        	console.log(provincesJson);
+	        	//console.log(cityName + "天气预报数据已存在自定义json对象中");
+	        	if(Object.keys(provincesJson).length == 34){
+	        		console.log(provincesJson);
+	        	}
 	        });
 		}
 
