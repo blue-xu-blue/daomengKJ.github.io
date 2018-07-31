@@ -5,23 +5,90 @@
 	<meta http-equiv="Access-Control-Allow-Origin" content="*">
 	<title>盗梦空间-个人博客</title>
 	<script type="text/javascript" src="../js/jquery.min.js"></script>
+	<script type="text/javascript" src="../js/echarts.js"></script>
+	<script type="text/javascript" src="../js/china.js"></script>
 	<script type="text/javascript" src="../data/provinces34.json"></script>
 
 	<style type="text/css">
-		#testHtml{
+		.weather_container{
+			width: 100%;
+			height: auto;
+			border: 1px solid #fff;
+		}
+		.current_city{
+			height: 50px;
+			border: 1px solid pink;
+		}
+		.weather_conditions{
+			border: 1px solid black;
+			overflow: hidden;
+		}
+		.current_weather,.forecast_weather{
+			width: 300px;
+			height: 150px;
+			border: 1px solid #ddd;
+			margin-right: 20px;
+			float: left;
+			position: relative;			
+		}
+		.current_weather > div,.forecast_weather > div{
+			position: absolute;
+		}
+		.current_time,.forecast_time{
+			top: 5px;
+			left: 5px;
+		}
+		.current_condition,.forecast_condition{
+			top: 5px;
+			right: 5px;
+		}
+		.current_temperature,.forecast_temperature{
+			left: 45%;
+			top: 40%;
+		}
+		.current_wind_direction,.forecast_wind_direction{
+			bottom: 5px;
+			right: 5px;
+		}
+		#hourWeather{
+			width: 100%;
+			height: 200px;
 			border: 1px solid red;
-			width: 1200px;
+			clear: both;
+		}
+		#chinaMap{
+			width: 100%;
 			height: 500px;
+			border: 1px solid red;
 		}
 	</style>
 	
 </head>
 <body>
+	<!-- 用来存放 抓取到的 中国天气 html-->
 	<div class="storeData" hidden="hidden"></div>
 	
-	<div id="weather"></div>
-
-	<p class="provinces"></p>
+	<div class="weather_container">
+		<div class="current_city">
+			<p>当前所在城市:<span></span></p>
+		</div>
+		<div class="weather_conditions">
+			<div class="current_weather">
+				<div class="current_time"></div>
+				<div class="current_condition"></div>
+				<div class="current_temperature"></div>
+				<div class="current_wind_direction"></div>
+			</div>
+			<div class="forecast_weather">
+				<div class="forecast_time"></div>
+				<div class="forecast_condition"></div>
+				<div class="forecast_temperature"></div>
+				<div class="forecast_wind_direction"></div>
+			</div>
+		</div>
+		<div id="hourWeather"></div>
+		<div id="chinaMap"></div>
+	</div>
 
 	<script type="text/javascript">
 		/**
@@ -35,24 +102,58 @@
 		*/
 
 		$(function(){
-			//此接口可以获取cityID，及7天天气预报(可能不太准确)
-			/*$.ajax({
-				url:'http://api.k780.com:88/?app=weather.future&weaid=1&&appkey=10003&sign=b59bc3ef6191eb9f747dd4e83c99f2a4&format=json&jsoncallback=data',
-				type:'get',
-				dataType:'jsonp',
-				jsonp:'jsoncallback',
-				success:function(data){
-					console.log(data);
-					alert(data);
-				},
-				error:function(XMLHttpRequest, textStatus, errorThrown){
-					alert(XMLHttpRequest.status);
-	                alert(XMLHttpRequest.readyState);
-	                alert(textStatus);
-				}
-			});*/
+			//接口:根据ip获取cityid，及weather数据(不太准确),这里只用到了cityid和citynm,天气数据到"中国天气"网站实时获取
+			getCurrentAreaData("1");
+			setTimeout(function(){
+				var current_cityid = currentAreaData["result"][0]["cityid"];
+				var current_citynm = currentAreaData["result"][0]["citynm"];
+				console.log(current_cityid);
+				console.log(current_citynm);
 
-			//解决跨域问题
+				//获取"中国天气"数据
+				var cityData = getChinaWeather(current_cityid,current_citynm,false);
+				var interval = setInterval(function(){
+					if(cityData != null && cityData != "" && Object.keys(cityData).length > 0){
+						clearInterval(interval);
+						console.log(cityData);
+
+						//将数据动态添加到html中
+						$(".current_city > p > span").text(cityData["cityName"]);
+
+						$(".current_time").text(cityData["currentData"]["current_time"]);
+						$(".current_condition").text(cityData["currentData"]["current_condition"]);
+						$(".current_temperature").text(cityData["currentData"]["current_temperature"]);
+						$(".current_wind_direction").text(cityData["currentData"]["current_wind_direction"]);
+
+						$(".forecast_time").text(cityData["forecastData"]["forecast_time"]);
+						$(".forecast_condition").text(cityData["forecastData"]["forecast_condition"]);
+						$(".forecast_temperature").text(cityData["forecastData"]["forecast_temperature"]);
+						$(".forecast_wind_direction").text(cityData["forecastData"]["forecast_wind_direction"]);
+
+						console.log(cityData["weatherHourData"]);
+						var weatherHourData = cityData["weatherHourData"];
+						var time_array = [];
+						var temperature_array = [];
+						var wind_direction_array = [];
+						for(var i in weatherHourData){
+							var hourWeather = weatherHourData[i].split(",");
+
+							time_array.push(hourWeather[0]);
+							var temperature = hourWeather[3].substring(0,hourWeather[3].indexOf("℃"));
+							temperature_array.push(temperature);
+							wind_direction_array.push(hourWeather[4] + hourWeather[5]);
+						}
+						console.log(time_array);
+						console.log(temperature_array);
+						console.log(wind_direction_array);
+
+						drawLineEchart(time_array,temperature_array,wind_direction_array);
+					}
+				},100);
+
+			},500);
+
+			//解决跨域问题(不可移除，否则无法访问"中国天气"网站)
 			$.ajaxPrefilter(function (options) {
 		        if (options.crossDomain && jQuery.support.cors) {
 		            var http = (window.location.protocol === 'http:' ? 'http:' : 'https:');
@@ -61,24 +162,34 @@
 		        }
 		    });
 
-		    //getChinaWeather("101010100","北京市");
+			//获取中国34省份cityid,并将天气数据存入provincesJson
+			getProvinces34Data();
 
+		});
 
-
+		//自定义json数据格式,存储中国34个省份的天气数据
+		var provincesJson = {};
+		
+		//获取中国34省份cityid,并将天气数据存入provincesJson
+		function getProvinces34Data(){
+			//从data/provinces34.json 中获取中国34个省份数据
 			var data = getProvinces();
 			
 			for(var key in data){
 				//console.log(key + " : " + data[key]);
-				getChinaWeather(key,data[key]);
+				getChinaWeather(key,data[key],true);
 			}
+		}
 
-
-		});
 		
-		//定义json格式
-		var flg = true;
-	    var provincesJson = {};
-		function getChinaWeather(cityId,cityName){
+		/**
+		*抓取“中国天气”网站数据
+		*cityId : 城市id
+		*cityName : 城市名称
+		*forFlg : true(循环获取多个城市数据)/false(单独只获取一个城市数据)
+		*/
+		function getChinaWeather(cityId,cityName,forFlg){
+			var cityJson = {};
 			$.get('http://www.weather.com.cn/weather1d/'+cityId+'.shtml',function (response) {
 	        	//截取需要用到的html内容
 	        	var startIndex = response.indexOf('<div class="today clearfix" id="today">');
@@ -116,9 +227,11 @@
 	        	$(".storeData").html(weatherHtml);
 
 	        	//基本情况:07月30日08时 周一  晴  34/25°C
-	        	var basicMessage = $(".storeData > #today > #hidden_title").val();
+	        	//var basicMessage = $(".storeData > #today > #hidden_title").val();
 
-	        	var weather_conditions = basicMessage.substring(basicMessage.indexOf("周")+4,basicMessage.lastIndexOf(" ")-1);
+	        	//console.log(basicMessage);
+
+	        	//var weather_conditions = basicMessage.substring(basicMessage.indexOf("周")+4,basicMessage.lastIndexOf(" ")-1);
 
 	        	//console.log(basicMessage);
 
@@ -131,6 +244,10 @@
 
 	        	var current_temperature = currentData.children(".tem").children("span").text()+"°C";
 
+	        	var current_wind_direction = currentData.children(".win").children("span");
+
+	        	current_wind_direction = current_wind_direction.attr("title") + " " + current_wind_direction.text();
+
 	        	//获取夜间天气预报
 	        	var forecastData = $(".storeData > #today > .t > .clearfix > li").last();
 
@@ -140,25 +257,219 @@
 
 	        	var forecast_temperature = forecastData.children(".tem").children("span").text()+"°C";
 
+	        	var forecast_wind_direction = currentData.children(".win").children("span");
+
+	        	forecast_wind_direction = forecast_wind_direction.attr("title") + " " + forecast_wind_direction.text();
+
 
 	        	//将存放数据的html清空，便于下次使用
 	        	$(".storeData").empty();
 
 	        	//将数据添加到自定义json中
-	        	var cityJson = {};
-	        	provincesJson[cityName] = cityJson;
-	        	cityJson["weather_conditions"] = weather_conditions;
-	        	cityJson["currentData"] = {"current_time":current_time,"current_temperature":current_temperature,"current_condition":current_condition};
-	        	cityJson["forecastData"] = {"forecast_time":forecast_time,"forecast_temperature":forecast_temperature,"forecast_condition":forecast_condition};
-	        	cityJson["weatherHourData"] = weatherHourData;
-	        	
-	        	//console.log(cityName + "天气预报数据已存在自定义json对象中");
-	        	if(Object.keys(provincesJson).length == 34){
-	        		console.log(provincesJson);
+	        	if(forFlg){
+					provincesJson[cityName] = cityJson;
 	        	}
+	        	cityJson["cityName"] = cityName;
+	        	//cityJson["weather_conditions"] = weather_conditions;
+	        	cityJson["currentData"] = {"current_time":current_time,"current_temperature":current_temperature,"current_condition":current_condition,"current_wind_direction":current_wind_direction};
+	        	cityJson["forecastData"] = {"forecast_time":forecast_time,"forecast_temperature":forecast_temperature,"forecast_condition":forecast_condition,"forecast_wind_direction":forecast_wind_direction};
+	        	cityJson["weatherHourData"] = weatherHourData;
+
+	        	if(forFlg){
+	        		//34个省份数据获取完成
+	        		if(Object.keys(provincesJson).length == 34){
+		        		console.log(provincesJson);
+
+		        		//对数据进行处理，得到地图需要的数据格式
+		        		makeMapData();
+		        	}
+	        	}
+	        	
 	        });
+	        if(!forFlg){
+	        	return cityJson;
+	        }
 		}
 
+		//接口:根据ip获取cityid，及weather数据(不太准确)
+		var currentAreaData;
+		function getCurrentAreaData(ip){
+			$.ajax({
+				url:'http://api.k780.com:88/?app=weather.future&weaid='+ip+'&&appkey=10003&sign=b59bc3ef6191eb9f747dd4e83c99f2a4&format=json',
+				type:'get',
+				dataType:'jsonp',
+				jsonp:'jsoncallback',
+				success:function(data){
+					currentAreaData = data;
+				},
+				error:function(XMLHttpRequest, textStatus, errorThrown){
+					alert(XMLHttpRequest.status);
+	                alert(XMLHttpRequest.readyState);
+	                alert(textStatus);
+				},
+				//async:false  //jsonp跨域请求，设置此属性无效
+			});
+		}
+
+		//对数据进行处理，得到地图需要的数据格式
+		function makeMapData(){
+			var mapData = [];
+			for(var city in provincesJson){
+				var data = provincesJson[city];
+				var cityName = data["cityName"];
+				if(cityName.indexOf("内蒙古") != -1 || cityName.indexOf("黑龙江") != -1){
+					cityName = data["cityName"].substr(0,3);
+				}else{
+					cityName = data["cityName"].substr(0,2);
+				}
+				var temperature = data["currentData"]["current_temperature"];
+				temperature = temperature.substring(0,temperature.indexOf("°C"));
+
+				//console.log(cityName + ":" + temperature);
+
+				var json = {"name":cityName,"value":temperature};
+				mapData.push(json);
+			}
+			console.log(mapData);
+			drawMapEchart(mapData);
+		}
+
+		//加载echart折线图
+		function drawLineEchart(time_array,temperature_array,wind_direction_array){
+			var myChart = echarts.init(document.getElementById('hourWeather'));
+			option = {
+			    tooltip:{
+			        show: true
+			    },
+			    grid:{
+			        top: '10%',
+			        left: '1%',
+			        right: '1%',
+			        bottom: '10%'
+			    },
+			    xAxis: [
+			        {
+			            type: 'category',
+			            data: time_array,
+			            axisLine:{
+			                show : false
+			            },
+			            axisTick:{
+			                show : false
+			            }
+			        },
+			        {
+			            type: 'category',
+			            data: wind_direction_array,
+			            axisLine:{
+			                show : false
+			            },
+			            axisTick:{
+			                show : false
+			            }
+			        }
+			    ],
+			    yAxis: {
+			        show: false,
+			        max: 50
+			    },
+			    series: [{
+			        data: temperature_array,
+			        type: 'line',
+			        itemStyle:{
+			            color: 'orange',
+			            borderWidth:5,
+			            borderType: 'solid'
+			        },
+
+			    }]
+			};
+			myChart.setOption(option);
+		}
+
+
+		function drawMapEchart(mapData){
+			var myChart = echarts.init(document.getElementById('chinaMap'));
+
+	        option = {
+        		title : {
+
+    		        x:'left'
+    		        
+    		    },
+	            tooltip: {},
+	            visualMap: {
+	                min: 0,
+	                max: 40,
+	                left: 'left',
+	                top: 'bottom',
+	                text: ['High','Low'],
+	                seriesIndex: [1],
+	                inRange: {
+	                    color: ['#7acffa', '#f5f649','#ec441f']
+	                },
+	                calculable : true
+	            },
+	            geo: {
+	                map: 'china',
+	                roam: true,
+	                zoom: 1.2,
+	                label: {
+	                    normal: {
+	                        show: true,
+	                        textStyle: {
+	                            color: 'rgba(0,0,0,0.4)'
+	                        }
+	                    }
+	                },
+	                itemStyle: {
+	                    normal:{
+	                        borderColor: 'rgba(0, 0, 0, 0.2)'
+	                    },
+	                    emphasis:{
+	                        areaColor: null,
+	                        shadowOffsetX: 0,
+	                        shadowOffsetY: 0,
+	                        shadowBlur: 20,
+	                        borderWidth: 0,
+	                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+	                    }
+	                }
+	            },
+	            series : [
+	               {
+	                   type: 'scatter',
+	                   coordinateSystem: 'geo',
+	                   symbolSize: 20,
+	                   symbol: 'path://M1705.06,1318.313v-89.254l-319.9-221.799l0.073-208.063c0.521-84.662-26.629-121.796-63.961-121.491c-37.332-0.305-64.482,36.829-63.961,121.491l0.073,208.063l-319.9,221.799v89.254l330.343-157.288l12.238,241.308l-134.449,92.931l0.531,42.034l175.125-42.917l175.125,42.917l0.531-42.034l-134.449-92.931l12.238-241.308L1705.06,1318.313z',
+	                   symbolRotate: 35,
+	                   label: {
+	                       normal: {
+	                           formatter: '{b}',
+	                           position: 'right',
+	                           show: false
+	                       },
+	                       emphasis: {
+	                           show: true
+	                       }
+	                   },
+	                   itemStyle: {
+	                       normal: {
+	                            color: '#F06C00'
+	                       }
+	                   }
+	                },
+	                {
+	                    name: '温度°C',
+	                    type: 'map',
+	                    geoIndex: 0,
+	                    // tooltip: {show: false},
+	                    data:mapData
+	                }
+	            ]
+	        };
+			myChart.setOption(option);
+		}
 	</script>
 
 
