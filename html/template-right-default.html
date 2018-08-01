@@ -25,6 +25,7 @@
 			display: none;
 		}
 		.weather_conditions{
+			height: 150px;
 			overflow: hidden;
 			padding-left: 20px;
 			padding-top:10px;
@@ -37,7 +38,8 @@
 			border: 1px solid #ddd;
 			margin-right: 20px;
 			float: left;
-			position: relative;			
+			position: relative;	
+			display: none;		
 		}
 		.current_weather > div,.forecast_weather > div{
 			position: absolute;
@@ -164,19 +166,19 @@
 			$(".barOne").animate({
 				width : '0',
 				opacity : '1'
-			},500,function(){
-				$(".barOne").css("float","right");
+			},600,function(){
 				$(".barOne").animate({
 					width : '943px'
-				},500,function(){
+				},600,function(){
+					$(".barOne").css("float","right");
 					$(".barOne").animate({
 						width : '0'
-					},500,function(){
-						$(".barOne").css("float","left");
+					},600,function(){
 						$(".barOne").animate({
 							width : '943px',
 							opacity : '0.2'
-						},500,function(){
+						},600,function(){
+							$(".barOne").css("float","left");
 							if(barOneAnimate_flg){
 								barOneAnimate();
 							}
@@ -190,20 +192,20 @@
 			$(".barTwo").animate({
 				width : '0',
 				opacity : '1'
-			},500,function(){
-				$(".barTwo").css("float","left");
+			},800,function(){
 				$(".barTwo").animate({
 					width : '943px'
-				},500,function(){
+				},800,function(){
+					$(".barTwo").css("float","left");
 					$(".barTwo").animate({
 						width : '0'
-					},500,function(){
-						$(".barTwo").css("float","right");
+					},800,function(){
 						$(".barTwo").animate({
 							width : '943px',
 							opacity : '0.2'
-						},500,function(){
-							if(barTwoAnimate_flg){
+						},800,function(){
+							$(".barTwo").css("float","right");
+							if(barOneAnimate_flg){
 								barTwoAnimate();
 							}
 						});
@@ -216,20 +218,20 @@
 			$(".barThree").animate({
 				width : '0',
 				opacity : '1'
-			},500,function(){
-				$(".barThree").css("float","right");
+			},1000,function(){
 				$(".barThree").animate({
 					width : '943px'
-				},500,function(){
+				},1000,function(){
+					$(".barThree").css("float","right");
 					$(".barThree").animate({
 						width : '0'
-					},500,function(){
-						$(".barThree").css("float","left");
+					},1000,function(){
 						$(".barThree").animate({
 							width : '943px',
 							opacity : '0.2'
-						},500,function(){
-							if(barThreeAnimate_flg){
+						},1000 	,function(){
+							$(".barThree").css("float","left");
+							if(barOneAnimate_flg){
 								barThreeAnimate();
 							}
 						});
@@ -322,6 +324,8 @@
 					$(".forecast_temperature").text(cityData["forecastData"]["forecast_temperature"]);
 					$(".forecast_wind_direction").text(cityData["forecastData"]["forecast_wind_direction"]);
 
+					$(".current_weather,.forecast_weather").show();
+
 					//整合折线图需要的数据
 					console.log(cityData["weatherHourData"]);
 					var weatherHourData = cityData["weatherHourData"];
@@ -342,6 +346,7 @@
 					
 					//绘制折线图
 					drawLineEchart(time_array,temperature_array,wind_direction_array);
+					$("#hourWeather").css("opacity","1");
 
 					//添加时间分布区段  白天/夜间
 					$(".timeDistribute > select").append('<option value="currentData">'+current_time+'</option><option value="forecastData">'+forecast_time+'</option>').show();
@@ -499,6 +504,11 @@
 			var cityId = $(city).val();
 			var cityName = $(city).children("option:selected").text();
 			loadCityWeather(cityId,cityName);
+
+			barOneAnimate();
+			barTwoAnimate();
+			$(".current_weather,.forecast_weather").hide();
+			$("#hourWeather").css("opacity","0");
 		}
 
 		//切换地图时段
