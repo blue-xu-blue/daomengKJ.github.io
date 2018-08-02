@@ -4,11 +4,14 @@
 	<meta charset="UTF-8">
 	<meta http-equiv="Access-Control-Allow-Origin" content="*">
 	<title>盗梦空间-个人博客</title>
+	<link rel="stylesheet" type="text/css" href="../css/loading.css">
+	<script type="text/javascript" src="../js/loading.js"></script>
 	<script type="text/javascript" src="../js/jquery.min.js"></script>
+	<!-- 新浪ip地址库 -->
+	<script src="https://pv.sohu.com/cityjson?ie=utf-8"></script>
+	<script type="text/javascript" src="../data/provinces34.json"></script>
 	<script type="text/javascript" src="../js/echarts.js"></script>
 	<script type="text/javascript" src="../js/china.js"></script>
-	<script type="text/javascript" src="../data/provinces34.json"></script>
-	
 
 	<style type="text/css">
 		.weather_container{
@@ -106,6 +109,25 @@
 			background: linear-gradient(to right, #01e4d8 , #f0c718);
 			float: left;
 		}
+		.loading{
+			width: 250px;
+			margin: 0 auto;
+			line-height: 150px;
+			position: relative;
+		}
+		.loading > .la-ball-clip-rotate-multiple{
+			position: absolute;
+			right: 0;
+			top: 43px;
+		}
+		.loading > .la-ball-clip-rotate-multiple.la-2x > div:first-child{
+			width: 42px !important;
+			height: 42px !important;
+		}
+		.loading > .la-ball-clip-rotate-multiple.la-2x > div:last-child{
+			width: 24px !important;
+			height: 24px !important;
+		}
 	</style>
 	
 </head>
@@ -124,6 +146,13 @@
 		<hr class="barOne">
 
 		<div class="weather_conditions">
+			<div class="loading">
+				获取"中国天气"数据中...
+				<div class="la-ball-clip-rotate-multiple la-2x">
+					<div></div>
+					<div></div>
+				</div>
+			</div>
 			<div class="current_weather">
 				<div class="current_time"></div>
 				<div class="current_condition"></div>
@@ -306,8 +335,9 @@
 					clearInterval(interval);
 					console.log(cityData);
 
+					//停止加载线条动画
 					barOneAnimate_flg = false;
-					barTwoAnimate_flg = false;
+					$(".loading").hide();
 
 					//将数据动态添加到html中
 					$(".current_city > p > span").text(cityData["cityName"]);
@@ -343,13 +373,16 @@
 					//console.log(time_array);
 					//console.log(temperature_array);
 					//console.log(wind_direction_array);
-					
+
+					//停止加载线条动画
+					barTwoAnimate_flg = false;
+
 					//绘制折线图
 					drawLineEchart(time_array,temperature_array,wind_direction_array);
 					$("#hourWeather").css("opacity","1");
 
 					//添加时间分布区段  白天/夜间
-					$(".timeDistribute > select").append('<option value="currentData">'+current_time+'</option><option value="forecastData">'+forecast_time+'</option>').show();
+					$(".timeDistribute > select").empty().append('<option value="currentData">'+current_time+'</option><option value="forecastData">'+forecast_time+'</option>').show();
 					
 				}
 			},50);
@@ -405,7 +438,8 @@
 
 				//只获取当前一天内的天气预报
 	        	var weatherHourData = hourData["1d"];
-
+	        	//7天天气预报
+	        	//var sevenDayWeather = hourData["7d"];
 
 	        	/*for(var i in weatherHourData){
 	        		console.log(weatherHourData[i]);
@@ -417,6 +451,7 @@
 	        	if(!forFlg){
 	        		//获取当前所在城市的城区
 	        		getCityArea();
+
 	        	}
 
 	        	//基本情况:07月30日08时 周一  晴  34/25°C
@@ -473,9 +508,6 @@
 	        		if(Object.keys(provincesJson).length == 34){
 		        		console.log(provincesJson);
 
-		        		//停止barThreeAnimate动画
-		        		barThreeAnimate_flg = false;
-
 		        		//对数据进行处理，得到地图需要的数据格式,默认加载当前时间段数据
 		        		var title = current_time + " 全国34省温度状况";
 		        		makeMapData("currentData",title);
@@ -507,6 +539,7 @@
 
 			barOneAnimate();
 			barTwoAnimate();
+			$(".loading").show();
 			$(".current_weather,.forecast_weather").hide();
 			$("#hourWeather").css("opacity","0");
 		}
@@ -547,6 +580,10 @@
 				mapData.push(json);
 			}
 			console.log(mapData);
+
+			//停止barThreeAnimate动画
+		    barThreeAnimate_flg = false;
+
 			//绘制地图
 			drawMapEchart(mapData,title);
 		}

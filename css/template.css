@@ -26,7 +26,7 @@ a{
 	background: linear-gradient(to right, #fe0602 , blue);
 	box-shadow: 0px 1px 2px 0px #4b71fa;
 	height: 2px;
-	position: absolute;
+	position: fixed;
 	top: 80px;
 	border: none;
 	width: 0;
@@ -44,11 +44,15 @@ a{
 	margin:0 auto;
 	opacity: 0;
 	float: left;
+	z-index: 999;
 }
 .template-top{
-	width: 100%;
+	width: 1200px;
 	height: 80px;
 	overflow: hidden;
+	position: fixed;
+	background: black;
+	z-index: 999;
 }
 .logoImg{
 	width: 70px;
@@ -57,7 +61,9 @@ a{
 	opacity: 0;
 }
 .nav{
-	float: right;
+	position: absolute;
+	top: 0;
+	right: 0;
 }
 .nav li{
 	float: left;
@@ -97,6 +103,7 @@ a{
 	height: auto;
 	position: relative;
 	overflow: hidden;
+	top: 80px;
 }
 .border-bar{
 	position: fixed;
