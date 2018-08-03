@@ -4,9 +4,9 @@
 	<meta charset="UTF-8">
 	<meta http-equiv="Access-Control-Allow-Origin" content="*">
 	<title>盗梦空间-个人博客</title>
+	<script type="text/javascript" src="../js/jquery.min.js"></script>
 	<link rel="stylesheet" type="text/css" href="../css/loading.css">
 	<script type="text/javascript" src="../js/loading.js"></script>
-	<script type="text/javascript" src="../js/jquery.min.js"></script>
 	<!-- 新浪ip地址库 -->
 	<script src="https://pv.sohu.com/cityjson?ie=utf-8"></script>
 	<script type="text/javascript" src="../data/provinces34.json"></script>
@@ -269,7 +269,8 @@
 			});
 		}
 
-		$(function(){			
+		$(function(){	
+			//线条长度为何没有设置成 100%		
 			barOneAnimate();
 			barTwoAnimate();
 			barThreeAnimate();
@@ -277,21 +278,6 @@
 			//通过调用新浪IP地址库接口查询用户当前所在国家、省份、城市、运营商信息,*需script引入新浪地址接口
 			var current_visit_ip= returnCitySN["cip"];
 			console.log("当前访问网站ip:"+current_visit_ip);
-
-			//接口:根据ip获取cityid，及weather数据(不太准确),这里只用到了cityid和citynm,天气数据到"中国天气"网站实时获取
-			getCurrentAreaData(current_visit_ip);
-			var areaInterval = setInterval(function(){
-				if(currentAreaData != null && currentAreaData != "" && Object.keys(currentAreaData).length > 0){
-					clearInterval(areaInterval);
-					var current_cityid = currentAreaData["result"][0]["cityid"];
-					var current_citynm = currentAreaData["result"][0]["citynm"];
-					//console.log(current_cityid);
-					//console.log(current_citynm);
-
-					//动态加载当前所在城市的天气数据
-					loadCityWeather(current_cityid,current_citynm);
-				}
-			},50);
 
 			//解决跨域问题(不可移除，否则无法访问"中国天气"网站)
 			$.ajaxPrefilter(function (options) {
@@ -302,6 +288,20 @@
 		        }
 		    });
 
+			//接口:根据ip获取cityid，及weather数据(不太准确),这里只用到了cityid和citynm,天气数据到"中国天气"网站实时获取
+			getCurrentAreaData(current_visit_ip);
+			var areaInterval = setInterval(function(){
+				if(currentAreaData != null && currentAreaData != "" && Object.keys(currentAreaData).length > 0){
+					clearInterval(areaInterval);
+					var current_cityid = currentAreaData["result"][0]["cityid"];
+					var current_citynm = currentAreaData["result"][0]["citynm"];
+					console.log(current_cityid + ":" + current_citynm);
+
+					//动态加载当前所在城市的天气数据
+					loadCityWeather(current_cityid,current_citynm);
+				}
+			},50);
+
 			//获取中国34省份cityid,并将天气数据存入provincesJson
 			getProvinces34Data();
 
@@ -310,13 +310,15 @@
 		//接口:根据ip获取cityid，及weather数据(不太准确)
 		var currentAreaData;
 		function getCurrentAreaData(ip){
-			$.ajax({
-				url:'http://api.k780.com:88/?app=weather.future&weaid='+ip+'&&appkey=10003&sign=b59bc3ef6191eb9f747dd4e83c99f2a4&format=json',
+			/*$.ajax({
+				url:'http://api.k780.com/?app=weather.future&weaid='+ip+'&&appkey=10003&sign=b59bc3ef6191eb9f747dd4e83c99f2a4&format=json',
+				//url:'http://api.k780.com:88/?app=weather.future&weaid='+ip+'&&appkey=10003&sign=b59bc3ef6191eb9f747dd4e83c99f2a4&format=json',
 				type:'get',
 				dataType:'jsonp',
 				jsonp:'jsoncallback',
 				success:function(data){
 					currentAreaData = data;
+					console.log(data);
 				},
 				error:function(XMLHttpRequest, textStatus, errorThrown){
 					alert(XMLHttpRequest.status);
@@ -324,6 +326,10 @@
 	                alert(textStatus);
 				},
 				//async:false  //jsonp跨域请求，设置此属性无效
+			});*/
+
+			$.get('http://api.k780.com/?app=weather.future&weaid=1&&appkey=10003&sign=b59bc3ef6191eb9f747dd4e83c99f2a4&format=json',function(data){
+				currentAreaData = data;
 			});
 		}
 
