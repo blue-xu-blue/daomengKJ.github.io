@@ -328,8 +328,16 @@
 				//async:false  //jsonp跨域请求，设置此属性无效
 			});*/
 
-			$.get('http://api.k780.com/?app=weather.future&weaid=1&&appkey=10003&sign=b59bc3ef6191eb9f747dd4e83c99f2a4&format=json',function(data){
-				currentAreaData = data;
+			$.ajax({
+				url:'https://api.k780.com/?app=weather.future&weaid='+ip+'&&appkey=10003&sign=b59bc3ef6191eb9f747dd4e83c99f2a4&format=json',
+				type:'get',
+				dataType:'json',
+				success:function(data){
+					currentAreaData = data;
+				},
+				error:function(){
+					alert("访问ipi.k780失败");
+				}
 			});
 		}
 
