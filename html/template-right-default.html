@@ -279,17 +279,20 @@
 			var current_visit_ip= returnCitySN["cip"];
 			console.log("当前访问网站ip:"+current_visit_ip);
 
-			//解决跨域问题(不可移除，否则无法访问"中国天气"网站)
-			$.ajaxPrefilter(function (options) {
-		        if (options.crossDomain && jQuery.support.cors) {
-		            var http = (window.location.protocol === 'http:' ? 'http:' : 'https:');
-		            options.url = http + '//cors-anywhere.herokuapp.com/' + options.url;
-		            //options.url = "http://cors.corsproxy.io/url=" + options.url;
-		        }
-		    });
+			console.log("测试一:获取ip");
+			$.getJSON('https://pv.sohu.com/cityjson?ie=utf-8',function(data){
+				console.log(data);
+			});
+
+			console.log("测试二:获取cityid");
+			$.getJSON('https://api.k780.com/?app=weather.future&weaid=1&&appkey=10003&sign=b59bc3ef6191eb9f747dd4e83c99f2a4&format=json',function(data){
+				console.log(data);
+			});
+
+			getCurrentAreaData(1);
 
 			//接口:根据ip获取cityid，及weather数据(不太准确),这里只用到了cityid和citynm,天气数据到"中国天气"网站实时获取
-			getCurrentAreaData(current_visit_ip);
+			/*getCurrentAreaData(current_visit_ip);
 			var areaInterval = setInterval(function(){
 				if(currentAreaData != null && currentAreaData != "" && Object.keys(currentAreaData).length > 0){
 					clearInterval(areaInterval);
@@ -300,7 +303,19 @@
 					//动态加载当前所在城市的天气数据
 					loadCityWeather(current_cityid,current_citynm);
 				}
-			},50);
+			},50);*/
+
+			//解决跨域问题(不可移除，否则无法访问"中国天气"网站)
+			$.ajaxPrefilter(function (options) {
+		        if (options.crossDomain && jQuery.support.cors) {
+		            var http = (window.location.protocol === 'http:' ? 'http:' : 'https:');
+		            options.url = http + '//cors-anywhere.herokuapp.com/' + options.url;
+		            //options.url = "http://cors.corsproxy.io/url=" + options.url;
+		        }
+		    });
+
+
+			loadCityWeather("101010100","北京");
 
 			//获取中国34省份cityid,并将天气数据存入provincesJson
 			getProvinces34Data();
@@ -310,7 +325,7 @@
 		//接口:根据ip获取cityid，及weather数据(不太准确)
 		var currentAreaData;
 		function getCurrentAreaData(ip){
-			/*$.ajax({
+			$.ajax({
 				url:'http://api.k780.com/?app=weather.future&weaid='+ip+'&&appkey=10003&sign=b59bc3ef6191eb9f747dd4e83c99f2a4&format=json',
 				//url:'http://api.k780.com:88/?app=weather.future&weaid='+ip+'&&appkey=10003&sign=b59bc3ef6191eb9f747dd4e83c99f2a4&format=json',
 				type:'get',
@@ -326,9 +341,9 @@
 	                alert(textStatus);
 				},
 				//async:false  //jsonp跨域请求，设置此属性无效
-			});*/
+			});
 
-			$.ajax({
+			/*$.ajax({
 				url:'https://api.k780.com/?app=weather.future&weaid='+ip+'&&appkey=10003&sign=b59bc3ef6191eb9f747dd4e83c99f2a4&format=json',
 				type:'get',
 				dataType:'json',
@@ -338,7 +353,7 @@
 				error:function(){
 					alert("访问ipi.k780失败");
 				}
-			});
+			});*/
 		}
 
 		//动态加载当前所在城市的天气数据
