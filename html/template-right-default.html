@@ -182,123 +182,20 @@
 	<script type="text/javascript">
 		/**
 		步骤:
-			1:统计34个身份
-			2.根据34个省份的名称 获取 cityid
-			3.通过cityid到 “中国天气” 获取天气数据，存入json中备用
-			4.地图绘制
-			5.获取当前用户的地区，加载最高温度，最低温度及一天内温度折线图
-			6.添加 选择城市 查询功能
+			1:调用搜狐ip地址库，获取当前用户ip
+			2.根据ip调用接口获取当前城市id
+			3.根据城市id,从"中国天气"网站获取当前城市的天气数据
+			4.获取34个省份，并从"中国天气"网站，获取到34个省份的天气数据
+			5.对数据进行处理，并动态显示在页面上
 		*/
 
-		var barOneAnimate_flg = true;
-		function barOneAnimate(){
-			$(".barOne").animate({
-				width : '0',
-				opacity : '1'
-			},600,function(){
-				$(".barOne").animate({
-					width : '943px'
-				},600,function(){
-					$(".barOne").css("float","right");
-					$(".barOne").animate({
-						width : '0'
-					},600,function(){
-						$(".barOne").animate({
-							width : '943px',
-							opacity : '0.2'
-						},600,function(){
-							$(".barOne").css("float","left");
-							if(barOneAnimate_flg){
-								barOneAnimate();
-							}
-						});
-					});
-				});
-			});
-		}
-		var barTwoAnimate_flg = true;
-		function barTwoAnimate(){
-			$(".barTwo").animate({
-				width : '0',
-				opacity : '1'
-			},800,function(){
-				$(".barTwo").animate({
-					width : '943px'
-				},800,function(){
-					$(".barTwo").css("float","left");
-					$(".barTwo").animate({
-						width : '0'
-					},800,function(){
-						$(".barTwo").animate({
-							width : '943px',
-							opacity : '0.2'
-						},800,function(){
-							$(".barTwo").css("float","right");
-							if(barOneAnimate_flg){
-								barTwoAnimate();
-							}
-						});
-					});
-				});
-			});
-		}
-		var barThreeAnimate_flg = true;
-		function barThreeAnimate(){
-			$(".barThree").animate({
-				width : '0',
-				opacity : '1'
-			},1000,function(){
-				$(".barThree").animate({
-					width : '943px'
-				},1000,function(){
-					$(".barThree").css("float","right");
-					$(".barThree").animate({
-						width : '0'
-					},1000,function(){
-						$(".barThree").animate({
-							width : '943px',
-							opacity : '0.2'
-						},1000 	,function(){
-							$(".barThree").css("float","left");
-							if(barOneAnimate_flg){
-								barThreeAnimate();
-							}
-						});
-					});
-				});
-			});
-		}
-
 		$(function(){	
-			//线条长度为何没有设置成 100%		
+			//执行线条动画	
 			barOneAnimate();
 			barTwoAnimate();
 			barThreeAnimate();
 
-			//通过调用新浪IP地址库接口查询用户当前所在国家、省份、城市、运营商信息,*需script引入新浪地址接口
-			/*var current_visit_ip= returnCitySN["cip"];
-			console.log("当前访问网站ip:"+current_visit_ip);*/
-
-			
-
-
-			//getCurrentAreaData(1);
-
-			//接口:根据ip获取cityid，及weather数据(不太准确),这里只用到了cityid和citynm,天气数据到"中国天气"网站实时获取
-			/*getCurrentAreaData(current_visit_ip);
-			var areaInterval = setInterval(function(){
-				if(currentAreaData != null && currentAreaData != "" && Object.keys(currentAreaData).length > 0){
-					clearInterval(areaInterval);
-					var current_cityid = currentAreaData["result"][0]["cityid"];
-					var current_citynm = currentAreaData["result"][0]["citynm"];
-					console.log(current_cityid + ":" + current_citynm);
-
-					//动态加载当前所在城市的天气数据
-					loadCityWeather(current_cityid,current_citynm);
-				}
-			},50);*/
-
-			//解决跨域问题(不可移除，否则无法访问"中国天气"网站)
+			//解决跨域及混合内容问题(不可移除，否则无法访问"中国天气"网站和"http://api.k780.com")
 			$.ajaxPrefilter(function (options) {
 		        if (options.crossDomain && jQuery.support.cors) {
 		            var http = (window.location.protocol === 'http:' ? 'http:' : 'https:');
@@ -307,40 +204,42 @@
 		        }
 		    });
 
-			//循环获取当前用户IP，获取到ip后再执行下一步操作
+			//调用搜狐ip地址库，获取当前用户ip，获取到ip后再执行下一步操作
 			var current_visit_ip = "";
 			var getIPInterval = setInterval(function(){
 				if(current_visit_ip != "" && current_visit_ip != null){
 					//停止getIPInterval
 					clearInterval(getIPInterval);
 					console.log("当前ip: " + current_visit_ip);
-					//接口:根据ip获取cityid，及weather数据(不太准确),这里只用到了cityid和citynm,天气数据到"中国天气"网站实时获取
+
+					//接口:根据ip获取cityid，及weather数据(不太准确),这里只用到了cityid和citynm
 					getCurrentAreaData(current_visit_ip);
 					var areaInterval = setInterval(function(){
 						if(currentAreaData != null && currentAreaData != "" && Object.keys(currentAreaData).length > 0){
+							//停止areaInterval
 							clearInterval(areaInterval);
+
 							var current_cityid = currentAreaData["result"][0]["cityid"];
 							var current_citynm = currentAreaData["result"][0]["citynm"];
 							console.log("当前城市id:" + current_cityid + "-" + current_citynm);
 
-							//动态加载当前所在城市的天气数据
+							//根据cityid从“中国天气”网站获取天气数据
 							loadCityWeather(current_cityid,current_citynm);
 						}
-					},50);
+					},2);
 
 				}else{
 					current_visit_ip = returnCitySN["cip"];
 				}
 				
-			},10);
-			
-
-			//loadCityWeather("101010100","北京");
+			},2);
 
 			//获取中国34省份cityid,并将天气数据存入provincesJson
 			getProvinces34Data();
 
 		});
+
+
 
 		//接口:根据ip获取cityid，及weather数据(不太准确)
 		var currentAreaData;
@@ -362,11 +261,18 @@
 				},
 				//async:false  //jsonp跨域请求，设置此属性无效
 			});*/
-			$.get('http://api.k780.com/?app=weather.future&weaid='+ip+'&&appkey=10003&sign=b59bc3ef6191eb9f747dd4e83c99f2a4&format=json',function(data){
-				console.log("进入:");
-				currentAreaData = data;
-				console.log(data);
-				console.log("--------------------------------");
+
+			$.ajax({
+				url:'http://api.k780.com/?app=weather.future&weaid='+ip+'&&appkey=10003&sign=b59bc3ef6191eb9f747dd4e83c99f2a4&format=json',
+				type:'get',
+				dataType:'json',
+				success:function(data){
+					currentAreaData = data;
+					//console.log(data);
+				},
+				error:function(){
+					alert("获取cityId失败!");
+				}
 			});
 			
 		}
@@ -779,6 +685,90 @@
 	            ]
 	        };
 			myChart.setOption(option);
+		}
+
+		//html class = barOne 动画
+		var barOneAnimate_flg = true;
+		function barOneAnimate(){
+			$(".barOne").animate({
+				width : '0',
+				opacity : '1'
+			},600,function(){
+				$(".barOne").animate({
+					width : '943px'
+				},600,function(){
+					$(".barOne").css("float","right");
+					$(".barOne").animate({
+						width : '0'
+					},600,function(){
+						$(".barOne").animate({
+							width : '943px',
+							opacity : '0.2'
+						},600,function(){
+							$(".barOne").css("float","left");
+							if(barOneAnimate_flg){
+								barOneAnimate();
+							}
+						});
+					});
+				});
+			});
+		}
+
+		//html class = barTwo 动画
+		var barTwoAnimate_flg = true;
+		function barTwoAnimate(){
+			$(".barTwo").animate({
+				width : '0',
+				opacity : '1'
+			},800,function(){
+				$(".barTwo").animate({
+					width : '943px'
+				},800,function(){
+					$(".barTwo").css("float","left");
+					$(".barTwo").animate({
+						width : '0'
+					},800,function(){
+						$(".barTwo").animate({
+							width : '943px',
+							opacity : '0.2'
+						},800,function(){
+							$(".barTwo").css("float","right");
+							if(barOneAnimate_flg){
+								barTwoAnimate();
+							}
+						});
+					});
+				});
+			});
+		}
+
+		//html class = barThree 动画
+		var barThreeAnimate_flg = true;
+		function barThreeAnimate(){
+			$(".barThree").animate({
+				width : '0',
+				opacity : '1'
+			},1000,function(){
+				$(".barThree").animate({
+					width : '943px'
+				},1000,function(){
+					$(".barThree").css("float","right");
+					$(".barThree").animate({
+						width : '0'
+					},1000,function(){
+						$(".barThree").animate({
+							width : '943px',
+							opacity : '0.2'
+						},1000 	,function(){
+							$(".barThree").css("float","left");
+							if(barOneAnimate_flg){
+								barThreeAnimate();
+							}
+						});
+					});
+				});
+			});
 		}
 	</script>
 
