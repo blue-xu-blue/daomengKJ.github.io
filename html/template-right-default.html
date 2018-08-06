@@ -311,6 +311,12 @@
 				console.log("--------------------------------");
 			});
 
+			$.get('https://pv.sohu.com/cityjson?ie=utf-8',function(data){
+				console.log("搜狐");
+				console.log(data);
+				console.log("--------------------------------");
+			});
+
 			loadCityWeather("101010100","北京");
 
 			//获取中国34省份cityid,并将天气数据存入provincesJson
