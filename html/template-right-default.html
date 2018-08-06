@@ -276,18 +276,9 @@
 			barThreeAnimate();
 
 			//通过调用新浪IP地址库接口查询用户当前所在国家、省份、城市、运营商信息,*需script引入新浪地址接口
-			var current_visit_ip= returnCitySN["cip"];
-			console.log("当前访问网站ip:"+current_visit_ip);
+			/*var current_visit_ip= returnCitySN["cip"];
+			console.log("当前访问网站ip:"+current_visit_ip);*/
 
-			console.log("测试一:获取ip");
-			$.getJSON('https://pv.sohu.com/cityjson?ie=utf-8',function(data){
-				console.log(data);
-			});
-
-			console.log("测试二:获取cityid");
-			$.getJSON('https://api.k780.com/?app=weather.future&weaid=1&&appkey=10003&sign=b59bc3ef6191eb9f747dd4e83c99f2a4&format=json',function(data){
-				console.log(data);
-			});
 
 			getCurrentAreaData(1);
 
