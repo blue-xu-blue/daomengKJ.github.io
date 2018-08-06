@@ -1,0 +1,115 @@
+.weather_container{
+	width: 100%;
+	height: auto;
+	color: white;
+}
+.current_city{
+	height: 50px;
+	line-height: 50px;
+	padding-left: 20px;
+}
+.cityArea{
+	display: none;
+}
+.weather_conditions{
+	height: 150px;
+	overflow: hidden;
+	padding-left: 20px;
+	padding-top:10px;
+	padding-bottom: 10px;
+	margin-top: 2px;
+}
+.current_weather,.forecast_weather{
+	width: 300px;
+	height: 150px;
+	border: 1px solid #ddd;
+	margin-right: 20px;
+	float: left;
+	position: relative;	
+	display: none;		
+}
+.current_weather > div,.forecast_weather > div{
+	position: absolute;
+}
+.current_time,.forecast_time{
+	top: 5px;
+	left: 5px;
+}
+.current_condition,.forecast_condition{
+	top: 5px;
+	right: 5px;
+}
+.current_temperature,.forecast_temperature{
+	left: 45%;
+	top: 40%;
+	font-weight: bold;
+}
+.current_wind_direction,.forecast_wind_direction{
+	bottom: 5px;
+	right: 5px;
+}
+#hourWeather{
+	width: 100%;
+	height: 150px;
+	clear: both;
+	padding-top:10px;
+	padding-bottom: 10px;
+	margin-top: 2px;
+}
+.timeDistribute{
+	height: 50px;
+	line-height: 50px;
+	padding-left: 20px;
+	padding-top:10px;
+	padding-bottom: 10px;
+	margin-top: 2px;
+}
+.timeDistribute select{
+	width: 130px;
+	height: 40px;
+	display: none;
+}
+#chinaMap{
+	width: 100%;
+	height: 500px;
+	padding-left: 20px;
+}
+.barOne,.barTwo,.barThree{
+	border: none;
+	height: 2px;
+	box-shadow: 0px 1px 2px 0px #4b71fa;
+	width: 943px;
+	margin: 0 2px;
+	opacity: 0.2;
+}
+.barOne{
+	background: linear-gradient(to right, #e36240 , #7ee122);
+	float: left;
+}
+.barTwo{
+	background: linear-gradient(to right, #7fe022 , #01e4d8);
+	float: right;
+}
+.barThree{
+	background: linear-gradient(to right, #01e4d8 , #f0c718);
+	float: left;
+}
+.loading{
+	width: 250px;
+	margin: 0 auto;
+	line-height: 150px;
+	position: relative;
+}
+.loading > .la-ball-clip-rotate-multiple{
+	position: absolute;
+	right: 0;
+	top: 43px;
+}
+.loading > .la-ball-clip-rotate-multiple.la-2x > div:first-child{
+	width: 42px !important;
+	height: 42px !important;
+}
+.loading > .la-ball-clip-rotate-multiple.la-2x > div:last-child{
+	width: 24px !important;
+	height: 24px !important;
+}

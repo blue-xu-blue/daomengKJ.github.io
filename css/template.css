@@ -116,6 +116,7 @@ a{
 	width: 2px;
 	box-shadow: 0 0 2px 0px #9cc7ff;
 	height: 0;
+	z-index: 999;
 }
 .leftbar{
 	background: linear-gradient(#FA0606 ,yellow, blue);
