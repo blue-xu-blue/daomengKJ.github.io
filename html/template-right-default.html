@@ -305,6 +305,11 @@
 		        }
 		    });
 
+			$.get('http://api.k780.com/?app=weather.future&weaid=1&&appkey=10003&sign=b59bc3ef6191eb9f747dd4e83c99f2a4&format=json',function(data){
+				console.log("进入:");
+				console.log(data);
+				console.log("--------------------------------");
+			});
 
 			loadCityWeather("101010100","北京");
 
