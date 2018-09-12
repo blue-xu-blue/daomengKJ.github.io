@@ -13,12 +13,19 @@ $(function(){
 
 	});
 
-	$(".leftnav > li").click(function(){
+	$(".leftnav > li").click(function(e){
 		$(this).siblings().find("ol").slideUp("fast");
 		var ol = $(this).find("ol");
 		if(ol != null && ol != ""){
 			ol.slideToggle("fast");	
 		}
+		e.stopPropagation();
+	});
+
+	$(".leftnav > li > ol > li").click(function(e){
+		var address = $(this).attr("address");
+		$(".switchConainer").load("../html/"+address+".html");
+		e.stopPropagation();
 	});
 
 	//加载翻页时间表
@@ -84,4 +91,8 @@ function loadRightDefault(){
 	},200,function(){
 		$(".switchConainer").load("../html/template-right-default.html");
 	});
+}
+
+function loadRightHtml(address){
+	$(".switchConainer").load("../html/"+address+".html");
 }

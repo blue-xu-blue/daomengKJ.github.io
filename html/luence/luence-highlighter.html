@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Luence高亮</title>
+	<style>
+		*{
+			color: #fff;
+		}
+		.highlighter{
+			padding: 5px 15px;
+		}
+		.highlighter > ul > li{
+			text-indent: 2em;
+			height: 30px;
+			line-height: 30px;
+		}
+		h4{
+			margin-top: 12px;
+			margin-bottom: 5px;
+		}
+		pre{
+			margin-top: 10px;
+			background-color: #1d2322;
+		}
+		p{
+			margin-top: 12px;
+			color: #cb963a;
+			cursor: pointer;
+		}
+	</style>
+</head>
+<body>
+
+	<div class="highlighter">
+
+		<h1>Highlighter</h1>
+
+		<h4>大致步骤:</h4>
+		<ul>
+			<li>1.创建QueryScorer,计算查询相关度得分</li>
+			<li>2.创建Fragmenter,根据得分计算片段</li>
+			<li>3.实例化Highlighter核心组件</li>
+			<li>4.获取高亮结果</li>
+		</ul>
+
+		<h4>执行代码</h4>
+		<pre>
+			<code>
+	*在上一章 IndexSearcher 中添加高亮方法(在main方法中调用即可):
+
+	private static void highlighter(IndexSearcher searcher,Query query) throws IOException, InvalidTokenOffsetsException {
+	        TopDocs topDocs = searcher.search(query, 10);
+
+	        //计算得分，会初始化一个查询结果最高的得分
+	        QueryScorer queryScorer = new QueryScorer(query);
+	        //根据这个得分计算出一个片段
+	        Fragmenter fragmenter = new SimpleSpanFragmenter(queryScorer);
+	        //设置高亮样式
+	        SimpleHTMLFormatter simpleHTMLFormatter = new SimpleHTMLFormatter("<b><font color=red>","</font></b>");
+	        //实例化Highlighter组件
+	        Highlighter highlighter = new Highlighter(simpleHTMLFormatter,queryScorer);
+	        //设置要显示的片段
+	        highlighter.setTextFragmenter(fragmenter);
+	        //分词器
+	        Analyzer analyzer = new StandardAnalyzer();
+
+	        ScoreDoc[] scoreDocs = topDocs.scoreDocs;
+	        for (ScoreDoc doc : scoreDocs){
+	            Document document = searcher.doc(doc.doc);
+
+	            System.out.println(document.get("name"));
+	            System.out.println(document.get("age"));
+
+	            String name = document.get("name");
+
+	            //获取高亮部分
+	            if (name != null){
+	                TokenStream tokenStream = analyzer.tokenStream("name", new StringReader(name));
+	                String bestFragment = highlighter.getBestFragment(tokenStream, name);
+	                System.out.println(bestFragment);
+	            }
+
+	            System.out.println("-----------------------------");
+	        }
+	    }
+			</code>
+		</pre>
+
+		<p onclick="loadRightHtml('luence/luence-indexSearcher')">上一章 —— luence搜索</p>
+	</div>
+	
+</body>
+</html>

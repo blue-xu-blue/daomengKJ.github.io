@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Luence搜索</title>
+	<style>
+		*{
+			color: #fff;
+		}
+		.indexSearch-content{
+			padding: 5px 15px;
+		}
+		.indexSearch-content > ul > li{
+			text-indent: 2em;
+			height: 30px;
+			line-height: 30px;
+		}
+		h4{
+			margin-top: 12px;
+			margin-bottom: 5px;
+		}
+		pre{
+			margin-top: 10px;
+			background-color: #1d2322;
+		}
+		p{
+			margin-top: 12px;
+			color: #cb963a;
+			cursor: pointer;
+		}
+	</style>
+</head>
+<body>
+
+	<div class="indexSearch-content">
+		<h1>Luence-IndexSearch</h1>
+
+		<h4>大致步骤:</h4>
+		<ul>
+			<li>1.创建IndexSearcher核心组件</li>
+			<li>2.创建Directory,指定建立索引的存储位置</li>
+			<li>3.创建Analyzer分词器</li>
+			<li>4.创建IndexReader,并进行配置</li>
+			<li>5.将IndexReader绑定到IndexSearcher</li>
+			<li>6.创建Query查询条件</li>
+			<li>7.通过IndexSearcher.search()查询，返回TopDocs结果</li>
+			<li>8.IndexReader.close()</li>
+		</ul>
+
+		<h4>本章需要了解的知识点:(可先跳过，先执行下面的代码，再回来详细查看)</h4>
+		<pre>
+			<code>
+	*以下均为个人笔记，如有不妥之处还望谅解并指出，详细内容请到官网查询(注意版本)
+
+	IndexSearcher  核心组件,用来读取/搜索索引
+
+	*构造方法:
+	 IndexSearcher(IndexReader r)
+
+	*常用方法:
+	 void close() -> 底层IndexReader没有关闭
+	 TopDocs search(Query query, int n)  -> 搜索前n个数据
+	 TopDocs search(Query query, Filter filter, int n) -> 搜索前n个数据,应用过滤器
+	 TopFieldDocs search(Query query, Filter filter, int n, Sort sort)
+
+	? Sort.INDEXORDER -> 通过索引顺序进行排序
+	? Sort.RELEVANCE -> 通过相关度进行排序
+
+	......
+
+	Term  搜索的最低单位
+
+	*构造方法
+	 Term(String key)
+	 Term(String key, String value)
+
+	......
+
+	Query  luence父查询类，包含各种实用方法
+
+	......
+
+	TermQuery  luence最常用的查询对象，包含许多复杂的查询
+
+	......
+
+	TopDocs  搜索结果，可指定查询条数
+
+	*常用方法
+	 getMaxScore() -> 返回遇到的最大比分的值
+	 results.totalHits() -> 匹配的总条数
+
+	--------------------------------------------
+	*查询对象和方法:
+
+	TermQuery  此类充当创造/在索引处理更新指标的核心组成部分。
+
+	----
+
+	TermRangeQuery  指定最小和最大值,进行范围搜索
+	*构造方法:
+	 TermRangeQuery(String field, BytesRef lowerTerm, BytesRef upperTerm, boolean includeLower, boolean includeUpper) -> includeLower是否包括下端点; includeUpper是否包括上端点
+
+	 ? BytesRef() -> BytesRef(String) -> BytesRef(int)
+
+	----
+
+	PrefixQuery  用于匹配其索引开始以指定的字符串的文档。
+	*构造方法
+	 PrefixQuery(Term prefix)
+
+	----
+
+	BooleanQuery  用于搜索的是使用AND，OR或NOT运算符多个查询结果的文件。
+	*BooleanQuery.Builder() - add(Query query, BooleanClause.Occur occur)
+	*BooleanQuery - build() -> 创建一个新的BooleanQuery基于参数被设置在这个构建器。
+
+	? BooleanClause.Occur.FILTER -> Like MUST except that these clauses do not participate in scoring.
+	? BooleanClause.Occur.MUST -> AND
+	? BooleanClause.Occur.MUST_NOT -> NOt
+	? BooleanClause.Occur.SHOULD -> AND
+
+	1．MUST和MUST：取得连个查询子句的交集。 
+	2．MUST和MUST_NOT：表示查询结果中不能包含MUST_NOT所对应得查询子句的检索结果。 
+	3．SHOULD与MUST_NOT：连用时，功能同MUST和MUST_NOT。
+	4．SHOULD与MUST连用时，结果为MUST子句的检索结果,但是SHOULD可影响排序。
+	5．SHOULD与SHOULD：表示“或”关系，最终检索结果为所有检索子句的并集。
+	6．MUST_NOT和MUST_NOT：无意义，检索无结果。
+
+	----
+
+	PhraseQuery  词组查询用于搜索包含词条的特定序列的文档
+	*https://blog.csdn.net/rick_123/article/details/6708527
+
+	----
+
+	WildCardQuery  用于搜索使用类似 '*' 的字符序列的通配符的文件，"?" 匹配单个字符。
+	*构造方法
+	 WildCardQuery(Term t) -> Term t = new Term("content", "?o*");
+
+	----
+
+	FuzzyQuery  模糊查询
+	*构造方法
+	 FuzzyQuery(Term t)
+
+	MatchAllDocsQuery  顾名思义匹配的所有文件
+			</code>
+		</pre>
+		
+		<h4>执行代码</h4>
+		<pre>
+			<code>
+	创建IndexSearcherText.class
+
+	import org.apache.lucene.analysis.Analyzer;
+	import org.apache.lucene.analysis.TokenStream;
+	import org.apache.lucene.analysis.standard.StandardAnalyzer;
+	import org.apache.lucene.document.Document;
+	import org.apache.lucene.index.DirectoryReader;
+	import org.apache.lucene.index.IndexReader;
+	import org.apache.lucene.index.Term;
+	import org.apache.lucene.queryparser.classic.QueryParser;
+	import org.apache.lucene.search.*;
+	import org.apache.lucene.search.highlight.*;
+	import org.apache.lucene.store.FSDirectory;
+	import org.apache.lucene.util.BytesRef;
+	import java.io.IOException;
+	import java.io.StringReader;
+	import java.nio.file.Paths;
+
+	public class SearchFiles {
+		
+		public static void main(String[] args) throws Exception {
+			// 指定建立索引的存储位置
+			String indexPath = "/home/juck/桌面/index"; 
+			IndexReader reader = DirectoryReader.open(FSDirectory.open(Paths.get(indexPath)));
+			//实例化IndexSearcher
+		        IndexSearcher searcher = new IndexSearcher(reader);
+		        //这里用模糊查询类方法进行查询
+		        FuzzyQuery fuzzyQuery = new FuzzyQuery(new Term("name","小"));
+		        //执行查询方法
+		        doPagingSearch(searcher, fuzzyQuery);
+		        //关闭流
+		        reader.close();
+		}
+
+		private static void doPagingSearch(IndexSearcher searcher, Query query) throws IOException, InvalidTokenOffsetsException {
+	        // TopDocs保存搜索结果,查询前10条
+	        TopDocs results = searcher.search(query, 10);
+			
+		//结果条数
+		int numTotalHits = Math.toIntExact(results.totalHits);
+	        System.out.println(numTotalHits + " total matching documents");
+
+	        ScoreDoc[] hits = results.scoreDocs;
+	        
+	        for (ScoreDoc hit : hits) {
+	            Document document = searcher.doc(hit.doc);
+	            System.out.println("姓名:" + document.get("name"));
+	            System.out.println("年龄:" + document.get("age"));
+
+	            System.out.println("----------------------------------");
+	        }
+	    }
+
+	}
+			</code>
+		</pre>
+
+		<p onclick="loadRightHtml('luence/luence-highlighter')">下一章 —— luence高亮</p>
+		<p onclick="loadRightHtml('luence/luence-indexWrite')">上一章 —— luence建立索引</p>
+	</div>
+	
+</body>
+</html>

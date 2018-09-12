@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Luence建立索引</title>
+	<style>
+		*{
+			color: #fff;
+		}
+		.indexWrite-content{
+			padding: 5px 15px;
+		}
+		.indexWrite-content > ul > li{
+			text-indent: 2em;
+			height: 30px;
+			line-height: 30px;
+		}
+		h4{
+			margin-top: 12px;
+			margin-bottom: 5px;
+		}
+		pre{
+			margin-top: 10px;
+			background-color: #1d2322;
+		}
+		p{
+			margin-top: 12px;
+			color: #cb963a;
+			cursor: pointer;
+		}
+	</style>
+</head>
+<body>
+	
+	<div class="indexWrite-content">
+		<h1>Luence-IndexWriter</h1>
+		
+		<h4>大致步骤:</h4>
+		<ul>
+			<li>1.创建IndexWriter核心组件</li>
+			<li>2.创建Directory,指定索引存储位置</li>
+			<li>3.创建Analyzer分词器</li>
+			<li>4.创建IndexWriteConfig,并进行配置</li>
+			<li>5.将IndexWriteConfig，及Directory绑定到IndexWriter</li>
+			<li>6.创建Document和Field,并绑定需要索引的数据</li>
+			<li>7.使用IndexWriter创建索引</li>
+			<li>8.IndexWriter.close()</li>
+		</ul>
+
+		<h4>本章需要了解的知识点:(可先跳过，先执行下面的代码，再回来详细查看)</h4>
+		<pre>
+			<code>
+	*以下均为个人笔记，如有不妥之处还望谅解并指出，详细内容请到官网查询(注意版本)
+
+	IndexWriter 核心组件,用来创建/更新索引
+
+	*构造方法: IndexWriter(Directory d, IndexWriterConfig conf)
+
+	*常用方法:
+	 void addDocument(Document doc)  -> 此索引增加了一个文件
+	 void close() -> 提交所有更改索引并关闭所有相关文件。
+	 void deleteAll() -> 删除索引中的所有文件。
+	 void deleteDocuments(Query... queries) -> 删除文件匹配提供的任何查询。
+	 void deleteDocuments(Term t) -> (Term[])
+	 void deleteDocuments(Query q) -> (Query[])
+	 void updateDocument(Term,Document)
+	 void updateDocument(Term,Document,Analyzer)
+
+	IndexWriterConfig  全局配置
+
+	*构造方法 IndexWriterConfig(Analyzer a) -> 配置分析器
+
+	*常用方法 setOpenModel(?) -> 设置存储模式
+
+	? IndexWriterConfig.OpenMode.CREATE_OR_APPEND -> 有则追加，无则创建
+
+	? IndexWriterConfig.OpenMode.CREATE -> 有则覆盖，无则创建
+
+	? IndexWriterConfig.OpenMode.APPEND -> 有则追加，无则抛异常
+
+	---
+
+	Directory  索引的存储位置
+
+	? FSDirectory -> 存放到文件系统中的磁盘里
+	? RAMDirectory -> 存放到内存当中的一个区域
+
+	---
+
+	Analyzer  负责分析文件 -> 只能理解Document
+
+	? WhitespaceAnalyzer -> 该分析仪analyzer分割的基础的空白文档中的文本。
+	? SimpleAnalyzer -> 此分析器分割在基于非字母字符的文档的文本，然后小写它们。
+	? StopAnalyzer -> 该分析仪的工作原理类似于SimpleAnalyzer并删除常用词像 'a','an','the'等等。
+	? StandardAnalyzer -> 这是最复杂的分析，并能处理姓名，电子邮件地址等，它小写每个标记，并删除常用词和标点符号(如有)。
+
+	---
+
+	Document  虚拟文档,存放数据
+
+	*常用方法:
+	 void add(Fieldable field) -> 增加一个字段到一个文档。
+
+	---
+
+	Field  键值对 -> 用来构成Document
+
+	? Field.Store.YES -> 会把指定域中的内容完全存储到文件中，方便进行还原[对于主键，标题可以是这种方式存储]  可以查询 可以打印内容
+
+	? Field.Store.NO -> 指定域的内容不存储到文件中，但是可以被索引，此时内容无法完全还原（doc.get()）[对于内容而言，没有必要进行存储]  可以查询 不可打印内容 节省空间
+			</code>
+		</pre>
+	
+		<h4>执行代码</h4>
+		<pre>
+			<code>
+	创建IndexWriterTest.class
+
+	import org.apache.lucene.analysis.Analyzer;
+	import org.apache.lucene.analysis.standard.StandardAnalyzer;
+	import org.apache.lucene.document.*;
+	import org.apache.lucene.index.IndexWriter;
+	import org.apache.lucene.index.IndexWriterConfig;
+	import org.apache.lucene.store.Directory;
+	import org.apache.lucene.store.FSDirectory;
+	import java.io.BufferedReader;
+	import java.io.IOException;
+	import java.io.InputStream;
+	import java.io.InputStreamReader;
+	import java.nio.charset.StandardCharsets;
+	import java.nio.file.*;
+	import java.nio.file.attribute.BasicFileAttributes;
+	import java.util.ArrayList;
+	import java.util.HashMap;
+	import java.util.List;
+	import java.util.Map;
+
+	public class IndexWriterTest {
+
+	    public static void main(String[] args){
+	        //指定索引存储位置
+	        String indexPath = "/home/juck/桌面/index";
+	        //核心组件,用来创建/更新索引
+	        IndexWriter writer = null;
+	        try{
+	            // 存储索引数据的目录
+	            Directory dir = FSDirectory.open(Paths.get(indexPath));
+	            // 创建分析器
+	            Analyzer analyzer = new StandardAnalyzer();
+	            //全局配置,给IndexWriter提供一系列初始化的配置参数
+	            IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
+	            //设置存储模式
+	            iwc.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
+	            //实例化IndexWriter
+	            writer = new IndexWriter(dir,iwc);
+	            //执行创建索引的方法
+	            createIndex(writer);
+	            //关闭流
+	            writer.close();
+	        }catch (Exception e){
+	            e.printStackTrace();
+	        }
+	    }
+		
+
+	    private static void  createIndex(final IndexWriter writer) throws IOException {
+	    	//假设从数据库获取数据
+	        List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
+	        Map<String,Object> map1 = new HashMap<String,Object>();
+	        map1.put("name","admin");
+	        map1.put("age", 12);
+	        map1.put("gender", "boy");
+	        list.add(map1);
+	        Map<String,Object> map2 = new HashMap<String,Object>();
+	        map2.put("name","小红");
+	        map2.put("age", 12);
+	        map2.put("gender", "girl");
+	        list.add(map2);
+	        Map<String,Object> map3 = new HashMap<String,Object>();
+	        map3.put("name","小黑");
+	        map3.put("age", 13);
+	        map3.put("gender", "boy");
+	        list.add(map3);
+	        Map<String,Object> map4 = new HashMap<String,Object>();
+	        map4.put("name","小白");
+	        map4.put("age", 14);
+	        map4.put("gender", "boy");
+	        list.add(map4);
+	        Map<String,Object> map5 = new HashMap<String,Object>();
+	        map5.put("name","小丽");
+	        map5.put("age", 11);
+	        map5.put("gender", "girl");
+	        list.add(map5);
+
+		//遍历集合
+	        for (Map<String,Object> m : list){
+	            //创建Document
+	            Document document = new Document();
+	            //创建Field，绑定数据，组建Document
+	            Field name = new StringField("name", String.valueOf(m.get("name")),Field.Store.YES);
+	            Field age = new StringField("age",String.valueOf(m.get("age")),Field.Store.YES);
+	            Field gender = new StringField("gender", String.valueOf(m.get("gender")),Field.Store.YES);
+	            document.add(name);
+	            document.add(age);
+	            document.add(gender);
+	            //建议索引
+	            writer.addDocument(document);
+	        }
+
+	        System.out.println("建立索引完成!");
+	    }
+
+	}
+
+			</code>
+		</pre>
+	
+		<p onclick="loadRightHtml('luence/luence-indexSearcher')">下一章 —— luence搜索</p>
+		<p onclick="loadRightHtml('luence/luence-indexWrite')">返回luence目录</p>
+	</div>
+
+</body>
+</html>

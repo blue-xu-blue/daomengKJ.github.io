@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Luence目录介绍</title>
+	<style>
+		*{
+			color: white;
+		}
+		.luence-content{
+			padding: 5px 15px;
+		}
+		h1{
+			margin-bottom: 10px;
+		}
+		.introduce{
+			text-indent: 2em;
+			margin-bottom: 10px;
+		}
+		dl{
+			margin-top: 20px;
+		}
+		dd{
+			text-indent: 2em;
+			height: 30px;
+			line-height: 30px;
+			cursor: pointer;
+			background-image: url(../../images/hand_click.png);
+		}
+		.luence-content > hr{
+			border:1px dashed #fff;
+			margin: 15px 0;
+		}
+		pre{
+			margin-top: 10px;
+			background-color: #1d2322;
+		}
+	</style>
+</head>
+<body>
+	
+	<div class="luence-content">
+		<h1>Luence</h1>
+		<p class="introduce">Luence:基于java的全文检索 将非结构化数据以结构化的方式建议索引并搜索,提升查询速度</p>
+
+		<dl>
+			<dt>第一章</dt>
+			<dd onclick="loadRightHtml('luence/luence-indexWrite')">luence建立索引</dd>
+			<dt>第二章</dt>
+			<dd onclick="loadRightHtml('luence/luence-indexSearcher')">luence搜索</dd>
+			<dt>第三章</dt>
+			<dd onclick="loadRightHtml('luence/luence-highlighter')">luence高亮</dd>
+		</dl>
+
+		<hr>
+
+		<label>引入依赖jar包,本次使用的版本皆为7.4.0</label>
+		
+		<pre>
+			<code>
+	    //lucene核心包
+	    <span><</span>dependency<span>></span>
+	        <span><</span>groupId<span>></span>org.apache.lucene<span><</span>/groupId<span>></span>
+	        <span><</span>artifactId<span>></span>lucene-core<span><</span>/artifactId<span>></span>
+	        <span><</span>version<span>></span>7.4.0<span><</span>/version<span>></span>
+	    <span><</span>/dependency<span>></span>
+	    //lucene 词法分析器
+	    <span><</span>dependency<span>></span>
+	        <span><</span>groupId<span>></span>org.apache.lucene<span><</span>/groupId<span>></span>
+	        <span><</span>artifactId<span>></span>lucene-analyzers-common<span><</span>/artifactId<span>></span>
+	        <span><</span>version<span>></span>7.4.0<span><</span>/version<span>></span>
+	    <span><</span>/dependency<span>></span>
+	    //lucene 搜索组件
+	    <span><</span>dependency<span>></span>
+	        <span><</span>groupId<span>></span>org.apache.lucene<span><</span>/groupId<span>></span>
+	        <span><</span>artifactId<span>></span>lucene-queryparser<span><</span>/artifactId<span>></span>
+	        <span><</span>version<span>></span>7.4.0<span><</span>/version<span>></span>
+	    <span><</span>/dependency<span>></span>
+	    //lucene 高亮组件
+	    <span><</span>dependency<span>></span>
+	        <span><</span>groupId<span>></span>org.apache.lucene<span><</span>/groupId<span>></span>
+	        <span><</span>artifactId<span>></span>lucene-highlighter<span><</span>/artifactId<span>></span>
+	        <span><</span>version<span>></span>7.4.0<span><</span>/version<span>></span>
+	    <span><</span>/dependency<span>></span>
+			</code>
+		</pre>
+	</div>
+	
+
+</body>
+</html>
