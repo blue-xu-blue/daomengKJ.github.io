@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Luence-Sort</title>
+	<style>
+		*{
+			color: #fff;
+		}
+		.luence-sort{
+			padding: 5px 15px;
+		}
+		.luence-sort > ul > li{
+			text-indent: 2em;
+			height: 30px;
+			line-height: 30px;
+		}
+		h4{
+			margin-top: 12px;
+			margin-bottom: 5px;
+		}
+		pre{
+			margin-top: 10px;
+			background-color: #1d2322;
+		}
+		p{
+			margin-top: 12px;
+			color: #cb963a;
+			cursor: pointer;
+		}
+	</style>
+</head>
+<body>
+
+	<div class="luence-sort">
+		<h1>Luence-Sort排序</h1>
+
+		<h4>抛出错误信息:</h4>
+		<pre>
+			<code>
+	Exception in thread "main" java.lang.IllegalStateException: unexpected docvalues type NONE for field 'name' (expected=NUMERIC). Re-index with correct docvalues type
+			</code>
+		</pre>
+
+		<h4>抛错原因:</h4>
+		<pre>
+			<code>
+	*创建索引，Document添加Field时,Field所使用的子类型,必须是SortedDocValuesField或NumericDocValuesField 可以排序的类型，才可使用Sort进行排序
+
+	StringField: 对String类型的字段的存储，StringField是只索引不分词
+	TextField: 对String类型的字段进行存储，TextField和StringField的不同是TextField既索引又分词
+	IntPoint: int类型存储
+	LongPoint: Long类型存储
+	FloatPoint: Float类型存储
+	DoublePoint: Double类型存储
+	SortedDocValuesField: 用于String()类型的Field的排序()
+	SortedSetDocValuesField: SortedSet<byte[]> indexed column-wise for sorting/faceting 
+	NumericDocValuesField: 用于数值类型的Field的排序
+	SortedNumericDocValuesField: SortedSet<long> indexed column-wise for sorting/faceting
+	StoredField: 存储Field的值，可以用IndexSearcher.doc和IndexReader.document来获取此Field和存储的值
+
+			</code>
+		</pre>
+
+		<h4>执行代码:</h4>
+		<pre>
+			<code>
+	//IndexWriterTest类:
+	Document document = new Document();
+	//使用NumericDocValuesField 数据类型排序
+	Field idSort = new NumericDocValuesField("id",Long.valueOf(String.valueOf(m.get("id"))));
+	//如果想让id可查询输出,需使用StoredField存储(否则id字段只能用来排序，无法查询输出 id=null)
+	Field id = new StoredField("id",String.valueOf(m.get("id")));
+	//执行创建索引等操作...
+	
+	--------------------------------------------------------------
+
+	//IndexSearcherTest类:
+	Sort sort = new Sort();
+	//创建索引使用的是NumericDocValuesField，所以SortField.Type.INT
+	SortField sortField = new SortField("name", SortField.Type.INT,false);
+    	sort.setSort(sortField);
+	TopDocs topDocs = IndexSearcher.searcher(Query , num , sort);
+	//对结果进行处理操作...
+			</code>
+		</pre>
+	</div>
+
+</body>
+</html>

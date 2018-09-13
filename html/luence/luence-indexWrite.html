@@ -108,6 +108,18 @@
 	? Field.Store.YES -> 会把指定域中的内容完全存储到文件中，方便进行还原[对于主键，标题可以是这种方式存储]  可以查询 可以打印内容
 
 	? Field.Store.NO -> 指定域的内容不存储到文件中，但是可以被索引，此时内容无法完全还原（doc.get()）[对于内容而言，没有必要进行存储]  可以查询 不可打印内容 节省空间
+
+	StringField: 对String类型的字段的存储，StringField是只索引不分词
+	TextField: 对String类型的字段进行存储，TextField和StringField的不同是TextField既索引又分词
+	IntPoint: int类型存储
+	LongPoint: Long类型存储
+	FloatPoint: Float类型存储
+	DoublePoint: Double类型存储
+	SortedDocValuesField: 用于String()类型的Field的排序()
+	SortedSetDocValuesField: SortedSet<byte[]> indexed column-wise for sorting/faceting 
+	NumericDocValuesField: 用于数值类型的Field的排序
+	SortedNumericDocValuesField: SortedSet<long> indexed column-wise for sorting/faceting
+	StoredField: 存储Field的值，可以用IndexSearcher.doc和IndexReader.document来获取此Field和存储的值
 			</code>
 		</pre>
 	
