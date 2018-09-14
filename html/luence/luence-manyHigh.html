@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Luence-多字段高亮</title>
+	<style>
+		*{
+			color: #fff;
+		}
+		.luence-manyHigh{
+			padding: 5px 15px;
+		}
+		.luence-manyHigh > ul > li{
+			text-indent: 2em;
+			height: 30px;
+			line-height: 30px;
+		}
+		h4{
+			margin-top: 12px;
+			margin-bottom: 5px;
+		}
+		pre{
+			margin-top: 10px;
+			background-color: #1d2322;
+		}
+		p{
+			margin-top: 12px;
+			color: #cb963a;
+			cursor: pointer;
+		}
+	</style>
+</head>
+<body>
+
+	<div class="luence-manyHigh">
+		<h1>Luence-多字段高亮</h1>
+		
+		<h4>执行代码:</h4>
+		<pre>
+			<code>
+	*按照第三章 高亮代码执行,只会对"name"字段的值，匹配到的关键字进行高亮
+	现在想要 对所有字段，只要值匹配关键字，便进行高亮
+
+	对IndexSearcherTest.class 进行优化:
+	其他代码都不需要修改，只需在TopDocs结果集遍历内部进行调整即可
+
+	ScoreDoc[] scoreDocs = topDocs.scoreDocs;
+	for (ScoreDoc doc : scoreDocs){
+		Document document = searcher.doc(doc.doc);
+		List<IndexableField> fields = document.getFields();
+		for (IndexableField indexableField : fields){
+	            Field field = (Field) indexableField;
+	            String bestFragment = highlighter.getBestFragment(analyzer, field.name(), field.stringValue());
+
+	            if (bestFragment != null){
+	            	System.out.println(bestFragment);
+
+	            	//将高亮后的值重新绑定到field中
+	                field.setStringValue(bestFragment);
+	            }
+	        }
+	}
+			</code>
+		</pre>
+
+		<p onclick="loadRightHtml('luence/luence-directory')">返回luence目录</p>
+	</div>
+	
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Luence-page</title>
+	<style>
+		*{
+			color: #fff;
+		}
+		.luence-page{
+			padding: 5px 15px;
+		}
+		.luence-page > ul > li{
+			text-indent: 2em;
+			line-height: 30px;
+		}
+		h4{
+			margin-top: 12px;
+			margin-bottom: 5px;
+		}
+		pre{
+			margin-top: 10px;
+			background-color: #1d2322;
+		}
+		p{
+			margin-top: 12px;
+			color: #cb963a;
+			cursor: pointer;
+		}
+	</style>
+</head>
+<body>
+	<div class="luence-page">
+		<h1>Luence-分页</h1>
+		
+		<h4>经过在网上的查找，Luence分页有两种方式:</h4>
+		<ul>
+			<li>1.通过IndexSearcher.searcher(Query query, int n)查询得到结果，再截取分页需要的部分数据，处理海量数据时，容易造成内存溢出</li>
+			<li>2.通过IndexSearcher.searcherAfter(ScoreDoc after, Query query, int numHits),这种方法用于处理大型结果集(比如在网站上查看图片时，图片会先加载出一部分，底部会有"加载更多"的按钮，点击"加载更多"，会再展现出一部分图片),这种方式就是把数据保存在缓存中，然后再通过上次查询的最后一条结果作为介质开始获取数据</li>
+		</ul>
+		
+		<h4>执行代码</h4>
+		<pre>
+			<code>
+	*searcher(Query query, int n)
+
+	@param query 查询条件
+	@param pageIndex 当前页数
+	@param pageSize 每页显示的条数
+	@return ScoreDoc 用于测试下面searcherAfterTest方法
+	public ScoreDoc searchPage(String query,int pageIndex,int pageSize) {
+		int startNum = (pageIndex-1) * pageSize; //ScoreDoc[] 数组下标从0开始
+		int endNum = pageIndex * pageSize;
+		TopDocs topDocs = IndexSearcher.searcher(query , endNum);
+		ScoreDoc[] scoreDocs = topDocs.scoreDocs;
+		//用于存储分页数据
+		List<Document> list = new ArrayList<Document>();
+		//
+		ScoreDoc scoreDoc = null;
+		for(int i = startNum ; i < endNum ; i++){
+			Document doc = searcher.doc(scoreDocs[i].doc);
+			System.out.println(doc.get("name"));
+			System.out.println(doc.get("age"));
+			list.add(doc);
+			if(i == endNum-1){
+				scoreDoc = scoreDocs[i];
+			}
+		}
+		return scoreDoc;
+	}
+
+
+	*IndexSearcher.searcherAfter(ScoreDoc after, Query query, int numHits)
+	@param query 查询条件
+	@param numHits 查询条数
+	public void searcherAfterTest(Query query, int numHits) {
+		//假设现在通过方法获取到了上次查询结果的最后一条ScoreDoc
+		ScoreDoc scoreDoc = searchPage(...);
+		TopDocs topDocs = IndexSearcher.searcherAfter(ScoreDoc after, Query query, int numHits);
+		//对结果进行处理...
+	}
+			</code>
+		</pre>
+
+		<p onclick="loadRightHtml('luence/luence-directory')">返回luence目录</p>
+	</div>
+</body>
+</html>

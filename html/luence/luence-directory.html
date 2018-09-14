@@ -20,12 +20,17 @@
 		dl{
 			margin-top: 20px;
 		}
-		dd{
-			text-indent: 2em;
+		dt,dd{
 			height: 30px;
 			line-height: 30px;
+		}
+		dd{
+			text-indent: 2em;
 			cursor: pointer;
-			background-image: url(../../images/hand_click.png);
+			background: url(../../images/hand_click.png) no-repeat center;
+		}
+		dd:hover{
+			color: #29f0e2;
 		}
 		.luence-content > hr{
 			border:1px dashed #fff;
@@ -52,6 +57,8 @@
 			<dd onclick="loadRightHtml('luence/luence-highlighter')">luence高亮</dd>
 			<dt>学习遇到的问题</dt>
 			<dd onclick="loadRightHtml('luence/luence-sort')">Sort排序问题</dd>
+			<dd onclick="loadRightHtml('luence/luence-manyHigh')">多字段高亮</dd>
+			<dd onclick="loadRightHtml('luence/luence-page')">luence分页</dd>
 		</dl>
 
 		<hr>
