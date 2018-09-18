@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>RMI</title>
+	<style>
+		*{
+			color: #fff;
+		}
+		.rmi{
+			padding: 5px 15px;
+		}
+		.rmi > ul > li{
+			text-indent: 2em;
+			height: 30px;
+			line-height: 30px;
+		}
+		h4{
+			margin-top: 12px;
+			margin-bottom: 5px;
+		}
+		pre{
+			margin-top: 10px;
+			background-color: #1d2322;
+		}
+
+	</style>
+</head>
+<body>
+	<div class="rmi">
+		<h1>RMI-远程方法调用</h1>
+		<p>rmi是java自身提供的，所以不需要导入其他依赖包</p>
+
+		<h4>参考他人博客:</h4>
+		<ul>
+			<li>1.https://blog.csdn.net/u013755987/article/details/51955808</li>
+			<li>2.https://blog.csdn.net/kingcat666/article/details/78578578</li>
+			<li>3.https://segmentfault.com/a/1190000004494341</li>
+		</ul>
+
+		<h4>大概执行步骤:</h4>
+		<ul>
+			<li>本次需要用到两个项目，一个作为服务端(包含调用对象及注册表，也可将注册表提出作为一个单独项目)，一个作为客户端</li>
+			<li>注意：服务端与客户端的包路径要一致(包括之后要导出的jar包)</li>
+			<li>一:服务端</li>
+			<li>1.创建User对象(下一步需要用到，必须序列化Serializable)</li>
+			<li>2.创建UserService调用接口(需继承Remote，抽象方法需抛出异常RemoteException)</li>
+			<li>3.*将User和UserService打成jar包</li>
+			<li>4.创建UserServiceImpl实现类(必须继承UnicastRemoteObject，实现抽象方法)</li>
+			<li>5.创建Service注册服务</li>
+			<li>二:客户端</li>
+			<li>1.*引入之前打好的jar包</li>
+			<li>2.创建ClientTest客户端进行远程调用测试</li>
+		</ul>
+
+		<h4>执行代码:</h4>
+		<h3>服务端</h3>
+		<pre>
+			<code>
+	1.创建User对象
+
+	package com.rmi.rmiService;
+
+	import java.io.Serializable;
+
+	public class User implements Serializable {
+		private static final long serialVersionUID = 1L;
+		private Long id;
+    	private String name;
+    	...
+	}
+
+
+	2.创建UserService接口
+
+	package com.rmi.rmiService;
+
+	import java.rmi.Remote;
+	import java.rmi.RemoteException;
+
+	public interface UserService extends Remote {
+		public User getUser() throws RemoteException;
+	}
+
+
+	3.打jar包备用(Client需要引入),以我本地环境为例(ubutun系统,idea开发工具):
+
+	打jar包是对编译后的class字节码文件进行打包，所以需要先启动一下服务端项目(便会对java文件进行编译，生成class文件)
+
+	在命令行输入:
+
+	cd /usr/java/idea-workspace/rmi/target/class
+
+	jar cvf /usr/java/rmi.jar com/rmi/rmiService
+
+	/usr/java/rmi.jar (将打包的jar包放在/usr/java目录下,名称为rmi.jar)
+	com/rmi/rmiService (将当前相对路径下rmiService目录里的所有文件进行打包)
+
+
+	4.创建UserServiceImpl实现类
+
+	package com.rmi.rmiService;
+
+	import org.springframework.stereotype.Service;
+	import java.rmi.RemoteException;
+	import java.rmi.server.UnicastRemoteObject;
+
+	public class UserServiceImpl extends UnicastRemoteObject implements UserService{
+	    public UserServiceImpl() throws RemoteException {
+	        super();
+	    }
+	    @Override
+	    public User getUser() throws RemoteException {
+	        User user = new User();
+	        user.setId(1L);
+	        user.setAge(12);
+	        user.setName("小明");
+	        ...
+	        return user;
+	    }
+	}
+
+
+	5.创建Service注册服务
+
+	package com.rmi.rmiService;
+
+	import java.rmi.AlreadyBoundException;
+	import java.rmi.RemoteException;
+	import java.rmi.registry.LocateRegistry;
+	import java.rmi.registry.Registry;
+
+	public class Service {
+	    public static void main(String[] args) throws RemoteException {
+	        UserService userService = new UserServiceImpl();
+	        Registry registry = LocateRegistry.createRegistry(6666);
+	        try {
+	            registry.bind("userService",userService);
+	            System.out.println("Service ready!");
+	        } catch (AlreadyBoundException e) {
+	            e.printStackTrace();
+	        }
+	    }
+	}
+			</code>
+		</pre>
+
+		<h3>客户端</h3>
+		<pre>
+			<code>
+	1.将之前打包好的jar包引入到客户端项目中(如何引入jar包就不多说了)
+
+	2.创建ClientTest客户端进行远程调用测试(进测试，客户端调用类与服务端包路径不同也可以正常访问)
+
+	package com.rmi.rmiClient;
+
+	import com.rmi.rmiService.User;
+	import com.rmi.rmiService.UserService;
+	import java.rmi.NotBoundException;
+	import java.rmi.RemoteException;
+	import java.rmi.registry.LocateRegistry;
+	import java.rmi.registry.Registry;
+
+	public class Client {
+	    public static void main(String[] args) throws RemoteException {
+	        Registry registry = LocateRegistry.getRegistry("localhost", 6666);
+	        try {
+	            UserService userService = (UserService)registry.lookup("userService");
+	            User user = userService.getUser();
+	            System.out.println(user.toString());
+	        } catch (NotBoundException e) {
+	            e.printStackTrace();
+	        }
+	    }
+	}
+
+
+	到此代码就都写完了，运行服务端的Service类，控制台输出Service ready! 则说明启动成功!
+	运行客户端Client类型，返回服务端设置的User对象,则调用成功!
+			</code>
+		</pre>
+	</div>
+
+</body>
+</html>
